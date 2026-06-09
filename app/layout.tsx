@@ -3,6 +3,7 @@ import { JetBrains_Mono } from 'next/font/google'
 import { GeistPixelGrid } from 'geist/font/pixel'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Sidebar } from '@/components/sidebar'
+import { TestGenAIProvider } from '@/components/testgenai-provider'
 
 import './globals.css'
 
@@ -45,12 +46,14 @@ export default function RootLayout({
     <html lang="en" className={`${jetbrainsMono.variable} ${GeistPixelGrid.variable}`} suppressHydrationWarning>
       <body className="font-mono antialiased bg-background">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-          <div className="min-h-screen dot-grid-bg">
-            <Sidebar />
-            <div className="lg:pl-64">
-              <main className="px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</main>
+          <TestGenAIProvider>
+            <div className="min-h-screen dot-grid-bg">
+              <Sidebar />
+              <div className="lg:pl-64">
+                <main className="px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</main>
+              </div>
             </div>
-          </div>
+          </TestGenAIProvider>
         </ThemeProvider>
       </body>
     </html>

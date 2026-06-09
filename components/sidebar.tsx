@@ -19,12 +19,12 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, code: "01" },
-  { href: "/upload", label: "Code Upload", icon: Upload, code: "02" },
-  { href: "/generate", label: "Test Generation", icon: Wand2, code: "03" },
-  { href: "/execution", label: "Test Execution", icon: PlayCircle, code: "04" },
-  { href: "/results", label: "Results & Coverage", icon: BarChart3, code: "05" },
-  { href: "/metrics", label: "Evaluation Metrics", icon: Gauge, code: "06" },
+  { href: "/", label: "Overview", icon: LayoutDashboard, code: "01" },
+  { href: "/upload", label: "Input Workspace", icon: Upload, code: "02" },
+  { href: "/generate", label: "Generator", icon: Wand2, code: "03" },
+  { href: "/execution", label: "Execution", icon: PlayCircle, code: "04" },
+  { href: "/results", label: "Coverage", icon: BarChart3, code: "05" },
+  { href: "/metrics", label: "Evaluation", icon: Gauge, code: "06" },
 ]
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

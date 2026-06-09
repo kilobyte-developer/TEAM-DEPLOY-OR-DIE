@@ -1,6 +1,7 @@
 # TestGenAI Backend Tasks (Yogesh)
 
 ## Objective
+
 Build the complete backend workflow for the hackathon MVP.
 
 ---
@@ -10,9 +11,11 @@ Build the complete backend workflow for the hackathon MVP.
 ## 1. File Upload API
 
 ### Endpoint
+
 `POST /upload`
 
 ### Responsibilities
+
 - Accept Python (.py) files
 - Validate file type
 - Store uploaded file locally
@@ -33,9 +36,11 @@ Build the complete backend workflow for the hackathon MVP.
 ## 2. AST Analysis Engine
 
 ### Endpoint
+
 `POST /analyze`
 
 ### Responsibilities
+
 - Parse uploaded Python code using Python AST
 - Extract:
   - Functions
@@ -61,12 +66,15 @@ Build the complete backend workflow for the hackathon MVP.
 ## 3. Code → Test Generation API
 
 ### Endpoint
+
 `POST /generate-tests`
 
 ### Input
+
 Python source code
 
 ### Responsibilities
+
 - Send code to Gemini
 - Generate pytest-compatible test cases
 - Generate:
@@ -86,6 +94,7 @@ Python source code
 ## 4. User Story → Test Case Generation
 
 ### Endpoint
+
 `POST /generate-userstory-tests`
 
 ### Input Example
@@ -97,6 +106,7 @@ using a valid email address.
 ```
 
 ### Responsibilities
+
 Generate:
 
 - Functional Test Cases
@@ -120,9 +130,11 @@ Generate:
 ## 5. Test Execution Engine
 
 ### Endpoint
+
 `POST /run-tests`
 
 ### Responsibilities
+
 - Save generated tests
 - Execute pytest
 - Capture:
@@ -145,9 +157,11 @@ Generate:
 ## 6. Results API
 
 ### Endpoint
+
 `GET /results`
 
 ### Responsibilities
+
 Return:
 
 - Total Tests Generated
@@ -173,9 +187,11 @@ Return:
 ## 7. Coverage Reporting
 
 ### Endpoint
+
 `GET /coverage`
 
 ### Responsibilities
+
 - Integrate pytest-cov
 - Calculate coverage percentage
 - Return coverage summary
@@ -195,9 +211,11 @@ Return:
 ## 8. Download Generated Tests
 
 ### Endpoint
+
 `GET /download-tests`
 
 ### Responsibilities
+
 - Return generated test file
 - Download as:
 

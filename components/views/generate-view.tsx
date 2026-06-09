@@ -1,121 +1,64 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Wand2, RefreshCw, Save, FunctionSquare, ArrowRight } from "lucide-react"
-import { PageHeader, Panel, BrutalButton } from "@/components/page-primitives"
-import { CodeViewer } from "@/components/code-viewer"
-import { detectedFunctions, unitTestCode, edgeTestCode } from "@/lib/mock-data"
-import { cn } from "@/lib/utils"
-
-const ease = [0.22, 1, 0.36, 1] as const
+import { PageHeader, Panel } from "@/components/page-primitives"
+import { AnalysisPanel } from "@/components/testgenai/analysis-panel"
+import { DemoBadge } from "@/components/testgenai/demo-badge"
+import { InputModeSelector } from "@/components/testgenai/input-mode-selector"
+import { TestViewer } from "@/components/testgenai/test-viewer"
+import { UserStoryTestViewer } from "@/components/testgenai/user-story-test-viewer"
+import { useTestGenAI } from "@/components/testgenai-provider"
 
 export function GenerateView() {
-  const [tab, setTab] = useState<"unit" | "edge">("unit")
-  const [generated, setGenerated] = useState(true)
+  const { state } = useTestGenAI()
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="AI Test Generation"
-        subtitle="Generate unit & edge-case tests from detected functions"
-        actions={
-          <>
-            <BrutalButton
-              variant="accent"
-              icon={<Wand2 size={14} strokeWidth={2} />}
-              onClick={() => setGenerated(true)}
-            >
-              Generate Tests
-            </BrutalButton>
-            <BrutalButton variant="outline" icon={<RefreshCw size={14} strokeWidth={1.5} />}>
-              Regenerate
-            </BrutalButton>
-            <BrutalButton variant="solid" icon={<Save size={14} strokeWidth={1.5} />}>
-              Save Test File
-            </BrutalButton>
-          </>
+        title="Generator"
+        subtitle={
+          state.inputMode === "source-code"
+            ? "Generate unit and edge-case suites from uploaded source code"
+            : "Review generated scenarios, negative flows, and edge cases from the story"
         }
+        actions={<DemoBadge />}
       />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Detected functions */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease }}
-        >
-          <Panel label="detected.functions" meta={`${detectedFunctions.length} FOUND`}>
-            <div className="flex flex-col">
-              {detectedFunctions.map((fn) => (
-                <div key={fn.name} className="flex flex-col gap-2 border-b border-border px-4 py-4 last:border-none">
-                  <div className="flex items-center gap-2">
-                    <FunctionSquare size={14} strokeWidth={1.5} className="text-[#ea580c]" />
-                    <span className="text-xs font-mono font-bold text-foreground">{fn.name}()</span>
-                  </div>
-                  <div className="flex flex-col gap-1 pl-6">
-                    {fn.params.map((p) => (
-                      <div key={p.name} className="flex items-center gap-2 text-[11px] font-mono">
-                        <span className="text-muted-foreground">{p.name}</span>
-                        <span className="text-muted-foreground/50">:</span>
-                        <span className="text-foreground">{p.type}</span>
-                      </div>
-                    ))}
-                    <div className="mt-1 flex items-center gap-1.5 text-[11px] font-mono">
-                      <ArrowRight size={11} strokeWidth={1.5} className="text-muted-foreground" />
-                      <span className="text-[#ea580c]">{fn.returnType ?? "void"}</span>
-                    </div>
-                  </div>
-                  <span className="pl-6 text-[10px] tracking-wider uppercase text-muted-foreground/60">
-                    {fn.file}
-                  </span>
+      <InputModeSelector />
+
+      {state.inputMode === "source-code" ? (
+        <div className="grid grid-cols-1 gap-6">
+          <AnalysisPanel />
+          <TestViewer />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <Panel label="story.snapshot" meta="CURRENT INPUT">
+            <div className="border-b border-border px-4 py-4">
+              <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">User Story</span>
+              <p className="mt-3 whitespace-pre-line text-sm leading-6 text-foreground">
+                {state.userStoryInput || "No user story submitted."}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-0">
+              <div className="border-r border-border px-4 py-4">
+                <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Story Status</span>
+                <div className="mt-3 text-lg font-mono font-bold text-foreground">
+                  {state.userStoryTests.data?.status ?? "Draft"}
                 </div>
-              ))}
+              </div>
+              <div className="px-4 py-4">
+                <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Generated Cases</span>
+                <div className="mt-3 text-lg font-mono font-bold text-foreground">
+                  {(state.userStoryTests.data?.positiveCases.length ?? 0) +
+                    (state.userStoryTests.data?.negativeCases.length ?? 0) +
+                    (state.userStoryTests.data?.edgeCases.length ?? 0)}
+                </div>
+              </div>
             </div>
           </Panel>
-        </motion.div>
-
-        {/* Generated test cases */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1, ease }}
-          className="flex flex-col gap-4 lg:col-span-2"
-        >
-          {/* tab switch */}
-          <div className="flex border border-foreground/20">
-            {[
-              { id: "unit" as const, label: "Unit Tests" },
-              { id: "edge" as const, label: "Edge Case Tests" },
-            ].map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={cn(
-                  "flex-1 px-4 py-3 text-xs font-mono uppercase tracking-widest transition-colors duration-150",
-                  tab === t.id ? "bg-foreground text-background" : "text-muted-foreground hover:bg-foreground/5",
-                )}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {generated ? (
-            tab === "unit" ? (
-              <CodeViewer code={unitTestCode} filename="test_payment_utils.py" />
-            ) : (
-              <CodeViewer code={edgeTestCode} filename="test_payment_utils_edge.py" />
-            )
-          ) : (
-            <div className="flex min-h-60 items-center justify-center border border-dashed border-foreground/30">
-              <span className="text-[11px] tracking-wider uppercase text-muted-foreground">
-                Press Generate Tests to begin
-              </span>
-            </div>
-          )}
-        </motion.div>
-      </div>
+          <UserStoryTestViewer />
+        </div>
+      )}
     </div>
   )
 }
