@@ -2,49 +2,48 @@
 
 import { motion } from "framer-motion"
 import {
-  FileCode,
-  FunctionSquare,
-  FlaskConical,
-  CheckCircle2,
-  XCircle,
+  ArrowRight,
+  FileCode2,
   Gauge,
+  PlayCircle,
+  ScrollText,
   Upload,
   Wand2,
-  PlayCircle,
-  ScanLine,
-  ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
+import { DemoBadge } from "@/components/testgenai/demo-badge"
+import { InputModeSelector } from "@/components/testgenai/input-mode-selector"
+import { ResultsDashboard } from "@/components/testgenai/results-dashboard"
+import { WorkflowVisualization } from "@/components/testgenai/workflow-visualization"
+import { useTestGenAI } from "@/components/testgenai-provider"
 import { PageHeader, Panel } from "@/components/page-primitives"
-import { StatCard } from "@/components/stat-card"
-import { summaryStats, recentActivity } from "@/lib/mock-data"
 
 const ease = [0.22, 1, 0.36, 1] as const
 
 const ACTIVITY_ICONS = {
   upload: Upload,
-  analysis: ScanLine,
+  analysis: FileCode2,
   generation: Wand2,
   execution: PlayCircle,
+  coverage: Gauge,
 }
 
 export function DashboardView() {
+  const { state } = useTestGenAI()
+
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader title="TestGenAI" subtitle="Automated Test Case Generator Agent" />
+      <PageHeader
+        title="Overview"
+        subtitle="Automated Test Case Generator Agent"
+        actions={<DemoBadge />}
+      />
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <StatCard label="Files Uploaded" value={summaryStats.filesUploaded} icon={FileCode} index={0} />
-        <StatCard label="Functions Detected" value={summaryStats.functionsDetected} icon={FunctionSquare} index={1} />
-        <StatCard label="Tests Generated" value={summaryStats.testsGenerated} icon={FlaskConical} index={2} />
-        <StatCard label="Tests Passed" value={summaryStats.testsPassed} icon={CheckCircle2} accent index={3} />
-        <StatCard label="Tests Failed" value={summaryStats.testsFailed} icon={XCircle} index={4} />
-        <StatCard label="Coverage" value={summaryStats.coverage} suffix="%" icon={Gauge} accent index={5} />
-      </div>
+      <InputModeSelector />
+      <ResultsDashboard />
+      <WorkflowVisualization />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Recent activity */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -53,7 +52,7 @@ export function DashboardView() {
         >
           <Panel label="recent.activity" meta="LIVE">
             <ul className="flex flex-col">
-              {recentActivity.map((item) => {
+              {state.activity.map((item) => {
                 const Icon = ACTIVITY_ICONS[item.type]
                 return (
                   <li
@@ -79,7 +78,6 @@ export function DashboardView() {
           </Panel>
         </motion.div>
 
-        {/* Quick actions */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -88,8 +86,16 @@ export function DashboardView() {
           <Panel label="quick.actions">
             <div className="flex flex-col">
               {[
-                { href: "/upload", label: "Upload Code", icon: Upload },
-                { href: "/generate", label: "Generate Tests", icon: Wand2 },
+                {
+                  href: "/upload",
+                  label: state.inputMode === "source-code" ? "Upload Code" : "Write User Story",
+                  icon: state.inputMode === "source-code" ? Upload : ScrollText,
+                },
+                {
+                  href: "/generate",
+                  label: state.inputMode === "source-code" ? "Generate Tests" : "View Story Cases",
+                  icon: Wand2,
+                },
                 { href: "/execution", label: "Run Tests", icon: PlayCircle },
                 { href: "/results", label: "View Coverage", icon: Gauge },
               ].map((action) => {
