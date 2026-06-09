@@ -1,2 +1,2 @@
 # TEAM DEPLOY OR DIE
-Capgemini Buildathoon Repo (USE CASE 38: Automated Test Case Generator)
+Capgemini Buildathon Repo (USE CASE 38: Automated Test Case Generator)
