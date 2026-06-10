@@ -66,9 +66,31 @@ export interface TestArtifact {
   testCount: number
 }
 
+export type SemanticTestCategory = "unit" | "negative" | "edge" | "boundary"
+
+export interface SemanticTestCase {
+  id: string
+  title: string
+  input: string
+  expected: string
+  category: SemanticTestCategory
+}
+
+export interface SemanticFunctionTestSuite {
+  id: string
+  functionName: string
+  fileName: string
+  className?: string
+  unitTests: SemanticTestCase[]
+  negativeTests: SemanticTestCase[]
+  edgeCases: SemanticTestCase[]
+  boundaryCases: SemanticTestCase[]
+}
+
 export interface GeneratedTests {
   repository: string
   generatedAt: string
+  semanticSuites?: SemanticFunctionTestSuite[]
   unitTests: TestArtifact[]
   edgeCaseTests: TestArtifact[]
   summary: {

@@ -1,13 +1,13 @@
 {
   "sourceFileName": "calculator.py",
-  "sourceFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/uploads/calculator.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\uploads\\calculator.py",
   "moduleName": "calculator",
-  "unitTestFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/generated_tests/test_calculator_unit.py",
-  "edgeTestFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/generated_tests/test_calculator_edge.py",
-  "combinedTestFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/generated_tests/test_generated.py",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_calculator_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_calculator_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_generated.py",
   "analysis": {
     "repository": "local-workspace",
-    "generatedAt": "2026-06-10T08:17:39.633492Z",
+    "generatedAt": "2026-06-10T11:37:56.217630Z",
     "functions": [
       {
         "id": "fn-1",
@@ -16,19 +16,16 @@
         "parameters": [
           {
             "name": "a",
-            "type": "float"
+            "type": "Any"
           },
           {
             "name": "b",
-            "type": "float"
+            "type": "Any"
           }
         ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return the sum of two numbers."
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function add extracted from uploaded source."
       },
       {
         "id": "fn-2",
@@ -37,275 +34,168 @@
         "parameters": [
           {
             "name": "a",
-            "type": "float"
+            "type": "Any"
           },
           {
             "name": "b",
-            "type": "float"
+            "type": "Any"
           }
         ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return the difference of two numbers."
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function subtract extracted from uploaded source."
       },
       {
         "id": "fn-3",
-        "name": "multiply",
-        "fileName": "calculator.py",
-        "parameters": [
-          {
-            "name": "a",
-            "type": "float"
-          },
-          {
-            "name": "b",
-            "type": "float"
-          }
-        ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return the product of two numbers."
-      },
-      {
-        "id": "fn-4",
         "name": "divide",
         "fileName": "calculator.py",
         "parameters": [
           {
             "name": "a",
-            "type": "float"
+            "type": "Any"
           },
           {
             "name": "b",
-            "type": "float"
+            "type": "Any"
           }
         ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return the quotient of two numbers. Raises ValueError on division by zero."
-      },
-      {
-        "id": "fn-5",
-        "name": "power",
-        "fileName": "calculator.py",
-        "parameters": [
-          {
-            "name": "base",
-            "type": "float"
-          },
-          {
-            "name": "exp",
-            "type": "float"
-          }
-        ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return base raised to the power of exp."
-      },
-      {
-        "id": "fn-6",
-        "name": "square_root",
-        "fileName": "calculator.py",
-        "parameters": [
-          {
-            "name": "n",
-            "type": "float"
-          }
-        ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return the square root of n. Raises ValueError for negative input."
-      },
-      {
-        "id": "fn-7",
-        "name": "percentage",
-        "fileName": "calculator.py",
-        "parameters": [
-          {
-            "name": "value",
-            "type": "float"
-          },
-          {
-            "name": "total",
-            "type": "float"
-          }
-        ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return what percentage value is of total. Raises ValueError if total is zero."
-      },
-      {
-        "id": "fn-8",
-        "name": "is_even",
-        "fileName": "calculator.py",
-        "parameters": [
-          {
-            "name": "n",
-            "type": "int"
-          }
-        ],
-        "returnType": "bool",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return True if n is even, False otherwise."
-      },
-      {
-        "id": "fn-9",
-        "name": "factorial",
-        "fileName": "calculator.py",
-        "parameters": [
-          {
-            "name": "n",
-            "type": "int"
-          }
-        ],
-        "returnType": "int",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return factorial of n. Raises ValueError for negative input."
-      },
-      {
-        "id": "fn-10",
-        "name": "clamp",
-        "fileName": "calculator.py",
-        "parameters": [
-          {
-            "name": "value",
-            "type": "float"
-          },
-          {
-            "name": "min_val",
-            "type": "float"
-          },
-          {
-            "name": "max_val",
-            "type": "float"
-          }
-        ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Clamp value between min_val and max_val."
-      },
-      {
-        "id": "fn-11",
-        "name": "__init__",
-        "fileName": "calculator.py",
-        "className": "Calculator",
-        "parameters": [],
         "returnType": "Any",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Method Calculator.__init__ extracted from uploaded source."
-      },
-      {
-        "id": "fn-12",
-        "name": "compute",
-        "fileName": "calculator.py",
-        "className": "Calculator",
-        "parameters": [
-          {
-            "name": "a",
-            "type": "float"
-          },
-          {
-            "name": "operator",
-            "type": "str"
-          },
-          {
-            "name": "b",
-            "type": "float"
-          }
-        ],
-        "returnType": "float",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Perform a calculation based on operator string (+, -, *, /)."
-      },
-      {
-        "id": "fn-13",
-        "name": "clear_history",
-        "fileName": "calculator.py",
-        "className": "Calculator",
-        "parameters": [],
-        "returnType": "Any",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Clear the operation history."
-      },
-      {
-        "id": "fn-14",
-        "name": "get_history",
-        "fileName": "calculator.py",
-        "className": "Calculator",
-        "parameters": [],
-        "returnType": "list[str]",
-        "dependencies": [
-          "math",
-          "typing"
-        ],
-        "description": "Return the operation history."
+        "dependencies": [],
+        "description": "Function divide extracted from uploaded source."
       }
     ],
-    "classes": [
-      {
-        "id": "class-1",
-        "name": "Calculator",
-        "fileName": "calculator.py",
-        "methods": [
-          "__init__",
-          "compute",
-          "clear_history",
-          "get_history"
-        ],
-        "dependencies": [
-          "math",
-          "typing"
-        ]
-      }
-    ],
-    "imports": [
-      "math",
-      "typing"
-    ],
-    "dependencies": [
-      "math",
-      "typing"
-    ]
+    "classes": [],
+    "imports": [],
+    "dependencies": []
   },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "add",
+      "fileName": "calculator.py",
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Primary Valid Input",
+          "category": "unit",
+          "input": "a = 'sample'\nb = 'sample'",
+          "expected": "add returns the documented result without raising an error."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Missing Required Input",
+          "category": "negative",
+          "input": "No arguments provided",
+          "expected": "TypeError is raised for an invalid call signature."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Empty Or Zero Value",
+          "category": "edge",
+          "input": "a = ''\nb = ''",
+          "expected": "add handles empty or zero-like input predictably."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Minimal Valid Boundary",
+          "category": "boundary",
+          "input": "a = 'x'\nb = 'x'",
+          "expected": "add accepts the smallest representative valid input."
+        }
+      ]
+    },
+    {
+      "id": "semantic-2",
+      "functionName": "subtract",
+      "fileName": "calculator.py",
+      "unitTests": [
+        {
+          "id": "TC-2-UNIT-001",
+          "title": "Primary Valid Input",
+          "category": "unit",
+          "input": "a = 'sample'\nb = 'sample'",
+          "expected": "subtract returns the documented result without raising an error."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-2-NEG-001",
+          "title": "Missing Required Input",
+          "category": "negative",
+          "input": "No arguments provided",
+          "expected": "TypeError is raised for an invalid call signature."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-2-EDGE-001",
+          "title": "Empty Or Zero Value",
+          "category": "edge",
+          "input": "a = ''\nb = ''",
+          "expected": "subtract handles empty or zero-like input predictably."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-2-BOUND-001",
+          "title": "Minimal Valid Boundary",
+          "category": "boundary",
+          "input": "a = 'x'\nb = 'x'",
+          "expected": "subtract accepts the smallest representative valid input."
+        }
+      ]
+    },
+    {
+      "id": "semantic-3",
+      "functionName": "divide",
+      "fileName": "calculator.py",
+      "unitTests": [
+        {
+          "id": "TC-3-UNIT-001",
+          "title": "Primary Valid Input",
+          "category": "unit",
+          "input": "a = 'sample'\nb = 'sample'",
+          "expected": "divide returns the documented result without raising an error."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-3-NEG-001",
+          "title": "Missing Required Input",
+          "category": "negative",
+          "input": "No arguments provided",
+          "expected": "TypeError is raised for an invalid call signature."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-3-EDGE-001",
+          "title": "Empty Or Zero Value",
+          "category": "edge",
+          "input": "a = ''\nb = ''",
+          "expected": "divide handles empty or zero-like input predictably."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-3-BOUND-001",
+          "title": "Minimal Valid Boundary",
+          "category": "boundary",
+          "input": "a = 'x'\nb = 'x'",
+          "expected": "divide accepts the smallest representative valid input."
+        }
+      ]
+    }
+  ],
   "summary": {
     "filesCovered": 1,
-    "unitTestsGenerated": 17,
-    "edgeTestsGenerated": 10
+    "unitTestsGenerated": 4,
+    "edgeTestsGenerated": 3
   }
 }

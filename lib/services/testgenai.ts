@@ -84,7 +84,7 @@ export async function runTests(mode: InputMode): Promise<ExecutionResult> {
     throw new Error('Test execution is only available for source code mode in MVP.')
   }
 
-  const response = await fetch(`${FASTAPI_BASE_URL}/run-tests`, {
+  const response = await fetch('/api/run-tests', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
