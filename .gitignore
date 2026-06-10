@@ -58,3 +58,8 @@ temp/
 
 # generated files
 *.pem
+
+backend/venv/
+backend/uploads/
+backend/generated_tests/
+backend/reports/
