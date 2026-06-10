@@ -209,7 +209,170 @@ def build_header(module_name: str, upload_dir: Path, dependencies: list[str], in
     )
 
 
-def build_unit_tests(source_code: str, file_path: Path) -> tuple[str, int]:
+def sanitize_test_name(value: str) -> str:
+    cleaned = "".join(character.lower() if character.isalnum() else "_" for character in value)
+    while "__" in cleaned:
+        cleaned = cleaned.replace("__", "_")
+    return cleaned.strip("_") or "semantic_case"
+
+
+def parse_semantic_input(input_text: str) -> dict[str, Any] | None:
+    if not input_text or input_text == "No input":
+        return {}
+
+    values: dict[str, Any] = {}
+    for raw_line in input_text.splitlines():
+        line = raw_line.strip()
+        if not line or "=" not in line:
+            return None
+        name, raw_value = line.split("=", 1)
+        name = name.strip()
+        if not name.isidentifier():
+            return None
+        try:
+            values[name] = ast.literal_eval(raw_value.strip())
+        except Exception:
+            return None
+    return values
+
+
+def expected_boolean(expected: str) -> bool | None:
+    normalized = expected.strip()
+    if normalized.startswith("True"):
+        return True
+    if normalized.startswith("False"):
+        return False
+    return None
+
+
+def expected_literal(expected: str) -> Any:
+    first_line = expected.strip().splitlines()[0].strip()
+    try:
+        value = ast.literal_eval(first_line)
+    except Exception:
+        return None
+    if isinstance(value, (str, int, float, bool, list, tuple, dict)) or value is None:
+        return value
+    return None
+
+
+def semantic_assertion_kind(expected: str) -> tuple[str, Any] | None:
+    boolean = expected_boolean(expected)
+    if boolean is not None:
+        return ("boolean", boolean)
+
+    literal = expected_literal(expected)
+    if literal is not None:
+        return ("literal", literal)
+
+    lowered = expected.lower()
+    if "discounted amount is less than the original price" in lowered:
+        return ("less_than_first_input", None)
+    if "discounted amount is between 0 and the original price" in lowered:
+        return ("between_zero_and_first_input", None)
+    if "discounted amount remains 0" in lowered:
+        return ("literal", 0)
+
+    return None
+
+
+def render_call_arguments(parameters: list[dict[str, str]], values: dict[str, Any]) -> str:
+    arguments: list[str] = []
+    for parameter in parameters:
+        name = parameter["name"]
+        if name not in values:
+            return ""
+        arguments.append(repr(values[name]))
+    return ", ".join(arguments)
+
+
+def build_semantic_assertion_tests(semantic_suites: list[dict[str, Any]], analysis: dict[str, Any]) -> tuple[list[str], int]:
+    function_lookup = {
+        (function.get("className"), function["name"]): function
+        for function in analysis["functions"]
+    }
+    lines: list[str] = []
+    count = 0
+    used_names: set[str] = set()
+    used_assertions: set[tuple[str, str, str]] = set()
+
+    for suite in semantic_suites:
+        class_name = suite.get("className")
+        if class_name:
+            continue
+
+        function_name = suite["functionName"]
+        function = function_lookup.get((None, function_name))
+        if not function:
+            continue
+
+        semantic_cases = (
+            suite.get("unitTests", [])
+            + suite.get("edgeCases", [])
+            + suite.get("boundaryCases", [])
+        )
+
+        for item in semantic_cases:
+            values = parse_semantic_input(item.get("input", ""))
+            assertion = semantic_assertion_kind(item.get("expected", ""))
+            if values is None or assertion is None:
+                continue
+
+            call_arguments = render_call_arguments(function["parameters"], values)
+            if call_arguments == "" and function["parameters"]:
+                continue
+            assertion_key = (function_name, call_arguments, repr(assertion))
+            if assertion_key in used_assertions:
+                continue
+            used_assertions.add(assertion_key)
+
+            base_name = sanitize_test_name(f'{function_name}_{item.get("title", item.get("id", "semantic"))}')
+            test_name = f"test_{base_name}_semantic_behavior"
+            suffix = 2
+            while test_name in used_names:
+                test_name = f"test_{base_name}_semantic_behavior_{suffix}"
+                suffix += 1
+            used_names.add(test_name)
+
+            expected_text = item.get("expected", "").split("Potential Logic Issue:")[0].strip()
+            input_text = item.get("input", "")
+            kind, expected_value = assertion
+
+            lines.append(f"def {test_name}():")
+            lines.append("    module = load_module()")
+            lines.append(f'    actual = getattr(module, "{function_name}")({call_arguments})')
+            lines.append(f"    input_under_test = {input_text!r}")
+            lines.append(f"    expected_description = {expected_text!r}")
+            if kind == "boolean":
+                lines.append(f"    expected = {expected_value!r}")
+                lines.append('    assert actual is expected, f"Input: {input_under_test} | Expected: {expected!r} ({expected_description}) | Actual: {actual!r}"')
+            elif kind == "literal":
+                lines.append(f"    expected = {expected_value!r}")
+                lines.append('    assert actual == expected, f"Input: {input_under_test} | Expected: {expected!r} ({expected_description}) | Actual: {actual!r}"')
+            elif kind == "less_than_first_input":
+                first_value = next(iter(values.values()), None)
+                if not isinstance(first_value, (int, float)):
+                    lines = lines[:-5]
+                    continue
+                lines.append(f"    original_value = {first_value!r}")
+                lines.append('    assert actual < original_value, f"Input: {input_under_test} | Expected: value less than {original_value!r} ({expected_description}) | Actual: {actual!r}"')
+            elif kind == "between_zero_and_first_input":
+                first_value = next(iter(values.values()), None)
+                if not isinstance(first_value, (int, float)):
+                    lines = lines[:-5]
+                    continue
+                lines.append(f"    original_value = {first_value!r}")
+                lines.append('    assert 0 <= actual <= original_value, f"Input: {input_under_test} | Expected: value between 0 and {original_value!r} ({expected_description}) | Actual: {actual!r}"')
+            else:
+                lines = lines[:-5]
+                continue
+            lines.append("")
+            count += 1
+
+    return lines, count
+
+
+def build_unit_tests(source_code: str, file_path: Path, semantic_suites: list[dict[str, Any]] | None = None) -> tuple[str, int]:
     tree = ast.parse(source_code)
     analysis = analyze_python_source(source_code, file_path.name)
     module_name = file_path.stem
@@ -271,7 +434,12 @@ def build_unit_tests(source_code: str, file_path: Path) -> tuple[str, int]:
                 lines.append(f'    cls = getattr(module, "{node.name}")')
                 lines.append("    cls()")
                 lines.append("")
-                count += 1
+            count += 1
+
+    semantic_lines, semantic_count = build_semantic_assertion_tests(semantic_suites or [], analysis)
+    if semantic_lines:
+        lines.extend(semantic_lines)
+        count += semantic_count
 
     if count == 0:
         lines.append("def test_placeholder():")
@@ -913,9 +1081,9 @@ def write_manifest(
 def generate_tests_for_file(file_path: Path, generated_dir: Path) -> dict[str, Any]:
     source_code = file_path.read_text(encoding="utf-8")
     analysis = analyze_python_source(source_code, file_path.name)
-    unit_code, unit_count = build_unit_tests(source_code, file_path)
-    edge_code, edge_count = build_edge_tests(source_code, file_path)
     semantic_suites = build_semantic_test_suites(source_code, file_path)
+    unit_code, unit_count = build_unit_tests(source_code, file_path, semantic_suites)
+    edge_code, edge_count = build_edge_tests(source_code, file_path)
 
     generated_dir.mkdir(parents=True, exist_ok=True)
 

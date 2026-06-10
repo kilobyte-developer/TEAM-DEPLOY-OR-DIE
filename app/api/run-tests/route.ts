@@ -6,8 +6,8 @@ import { join } from 'path'
 export const runtime = 'nodejs'
 
 const BACKEND_DIR = join(process.cwd(), 'backend')
-const GENERATED_TESTS_DIR = join(BACKEND_DIR, 'generated_tests')
-const REPORTS_DIR = join(BACKEND_DIR, 'reports')
+const GENERATED_TESTS_DIR = '/tmp/testgenai_generated_tests'
+const REPORTS_DIR = '/tmp/testgenai_reports'
 const MANIFEST_PATH = join(GENERATED_TESTS_DIR, 'manifest.json')
 const RESULTS_PATH = join(REPORTS_DIR, 'results.json')
 const PYTHON_CMD = process.platform === 'win32' ? 'python' : 'python3'

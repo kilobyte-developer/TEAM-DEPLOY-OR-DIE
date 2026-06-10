@@ -1,80 +1,80 @@
 {
   "mode": "source-code",
   "status": "completed",
-  "generatedAt": "2026-06-10T12:29:22.015Z",
+  "generatedAt": "2026-06-10T12:57:53.451Z",
   "totalTests": 7,
   "passedTests": 7,
   "failedTests": 0,
-  "executionTime": "0.65s",
+  "executionTime": "0.67s",
   "passRate": 100,
   "logs": [
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "info",
       "message": "============================= test session starts ============================="
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "info",
       "message": "platform win32 -- Python 3.11.0, pytest-9.0.3, pluggy-1.6.0 -- C:\\Users\\Atharva Funde\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "info",
       "message": "cachedir: .pytest_cache"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "info",
       "message": "rootdir: C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "info",
       "message": "plugins: anyio-4.11.0, cov-7.1.0"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "info",
       "message": "collecting ... collected 7 items"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "pass",
       "message": "generated_tests/test_calculator_unit.py::test_module_imports_successfully PASSED [ 14%]"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "pass",
       "message": "generated_tests/test_calculator_unit.py::test_add_is_defined PASSED      [ 28%]"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "pass",
       "message": "generated_tests/test_calculator_unit.py::test_subtract_is_defined PASSED [ 42%]"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "pass",
       "message": "generated_tests/test_calculator_unit.py::test_divide_is_defined PASSED   [ 57%]"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "pass",
       "message": "generated_tests/test_calculator_edge.py::test_add_rejects_missing_required_arguments PASSED [ 71%]"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "pass",
       "message": "generated_tests/test_calculator_edge.py::test_subtract_rejects_missing_required_arguments PASSED [ 85%]"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "pass",
       "message": "generated_tests/test_calculator_edge.py::test_divide_rejects_missing_required_arguments PASSED [100%]"
     },
     {
-      "timestamp": "17:59:22",
+      "timestamp": "18:27:53",
       "level": "info",
       "message": "============================== 7 passed in 0.04s =============================="
     }
