@@ -8,7 +8,7 @@ import type {
   UserStoryTestSuite,
 } from '@/lib/testgenai-types'
 
-const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ?? 'http://127.0.0.1:8000'
+const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ?? 'https://team-deploy-or-die.onrender.com'
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {
   const payload = await response.json().catch(() => null)
