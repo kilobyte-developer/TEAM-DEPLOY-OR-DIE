@@ -7,7 +7,7 @@
   "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_generated.py",
   "analysis": {
     "repository": "local-workspace",
-    "generatedAt": "2026-06-10T05:09:02.913675Z",
+    "generatedAt": "2026-06-10T11:37:56.217630Z",
     "functions": [
       {
         "id": "fn-1",
@@ -68,6 +68,131 @@
     "imports": [],
     "dependencies": []
   },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "add",
+      "fileName": "calculator.py",
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Primary Valid Input",
+          "category": "unit",
+          "input": "a = 'sample'\nb = 'sample'",
+          "expected": "add returns the documented result without raising an error."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Missing Required Input",
+          "category": "negative",
+          "input": "No arguments provided",
+          "expected": "TypeError is raised for an invalid call signature."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Empty Or Zero Value",
+          "category": "edge",
+          "input": "a = ''\nb = ''",
+          "expected": "add handles empty or zero-like input predictably."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Minimal Valid Boundary",
+          "category": "boundary",
+          "input": "a = 'x'\nb = 'x'",
+          "expected": "add accepts the smallest representative valid input."
+        }
+      ]
+    },
+    {
+      "id": "semantic-2",
+      "functionName": "subtract",
+      "fileName": "calculator.py",
+      "unitTests": [
+        {
+          "id": "TC-2-UNIT-001",
+          "title": "Primary Valid Input",
+          "category": "unit",
+          "input": "a = 'sample'\nb = 'sample'",
+          "expected": "subtract returns the documented result without raising an error."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-2-NEG-001",
+          "title": "Missing Required Input",
+          "category": "negative",
+          "input": "No arguments provided",
+          "expected": "TypeError is raised for an invalid call signature."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-2-EDGE-001",
+          "title": "Empty Or Zero Value",
+          "category": "edge",
+          "input": "a = ''\nb = ''",
+          "expected": "subtract handles empty or zero-like input predictably."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-2-BOUND-001",
+          "title": "Minimal Valid Boundary",
+          "category": "boundary",
+          "input": "a = 'x'\nb = 'x'",
+          "expected": "subtract accepts the smallest representative valid input."
+        }
+      ]
+    },
+    {
+      "id": "semantic-3",
+      "functionName": "divide",
+      "fileName": "calculator.py",
+      "unitTests": [
+        {
+          "id": "TC-3-UNIT-001",
+          "title": "Primary Valid Input",
+          "category": "unit",
+          "input": "a = 'sample'\nb = 'sample'",
+          "expected": "divide returns the documented result without raising an error."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-3-NEG-001",
+          "title": "Missing Required Input",
+          "category": "negative",
+          "input": "No arguments provided",
+          "expected": "TypeError is raised for an invalid call signature."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-3-EDGE-001",
+          "title": "Empty Or Zero Value",
+          "category": "edge",
+          "input": "a = ''\nb = ''",
+          "expected": "divide handles empty or zero-like input predictably."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-3-BOUND-001",
+          "title": "Minimal Valid Boundary",
+          "category": "boundary",
+          "input": "a = 'x'\nb = 'x'",
+          "expected": "divide accepts the smallest representative valid input."
+        }
+      ]
+    }
+  ],
   "summary": {
     "filesCovered": 1,
     "unitTestsGenerated": 4,

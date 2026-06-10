@@ -4,7 +4,7 @@ import { join } from 'path'
 
 export const runtime = 'nodejs'
 
-const REPORTS_DIR = join(process.cwd(), 'backend', 'reports')
+const REPORTS_DIR = '/tmp/testgenai_reports'
 
 export async function GET() {
   try {

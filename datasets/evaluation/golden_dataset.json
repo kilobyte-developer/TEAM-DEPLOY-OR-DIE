@@ -1,0 +1,1082 @@
+[
+  {
+    "id": "SRC_SIMPLE_001",
+    "type": "source_code",
+    "category": "simple",
+    "file": "calculator.py",
+    "expected_functions": 3,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_002",
+    "type": "source_code",
+    "category": "simple",
+    "file": "currency_converter.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_003",
+    "type": "source_code",
+    "category": "simple",
+    "file": "date_validator.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_004",
+    "type": "source_code",
+    "category": "simple",
+    "file": "discount_calculator.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_005",
+    "type": "source_code",
+    "category": "simple",
+    "file": "email_validator.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_006",
+    "type": "source_code",
+    "category": "simple",
+    "file": "grade_calculator.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_007",
+    "type": "source_code",
+    "category": "simple",
+    "file": "interest_calculator.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_008",
+    "type": "source_code",
+    "category": "simple",
+    "file": "password_strength_checker.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_009",
+    "type": "source_code",
+    "category": "simple",
+    "file": "string_formatter.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_SIMPLE_010",
+    "type": "source_code",
+    "category": "simple",
+    "file": "temperature_converter.py",
+    "expected_functions": 2,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_001",
+    "type": "source_code",
+    "category": "medium",
+    "file": "attendance_system.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_002",
+    "type": "source_code",
+    "category": "medium",
+    "file": "bank_account.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_003",
+    "type": "source_code",
+    "category": "medium",
+    "file": "employee_manager.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_004",
+    "type": "source_code",
+    "category": "medium",
+    "file": "expense_tracker.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_005",
+    "type": "source_code",
+    "category": "medium",
+    "file": "inventory_manager.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_006",
+    "type": "source_code",
+    "category": "medium",
+    "file": "order_processor.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_007",
+    "type": "source_code",
+    "category": "medium",
+    "file": "otp_service.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_008",
+    "type": "source_code",
+    "category": "medium",
+    "file": "shopping_cart.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_009",
+    "type": "source_code",
+    "category": "medium",
+    "file": "student_management.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_MEDIUM_010",
+    "type": "source_code",
+    "category": "medium",
+    "file": "ticket_booking.py",
+    "expected_functions": 6,
+    "expected_classes": 1,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_001",
+    "type": "source_code",
+    "category": "large",
+    "file": "banking_platform.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_002",
+    "type": "source_code",
+    "category": "large",
+    "file": "ecommerce_platform.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_003",
+    "type": "source_code",
+    "category": "large",
+    "file": "flight_reservation_system.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_004",
+    "type": "source_code",
+    "category": "large",
+    "file": "hospital_management.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_005",
+    "type": "source_code",
+    "category": "large",
+    "file": "insurance_claim_system.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_006",
+    "type": "source_code",
+    "category": "large",
+    "file": "learning_management_system.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_007",
+    "type": "source_code",
+    "category": "large",
+    "file": "loan_management_system.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_008",
+    "type": "source_code",
+    "category": "large",
+    "file": "payroll_system.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_009",
+    "type": "source_code",
+    "category": "large",
+    "file": "subscription_management.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_LARGE_010",
+    "type": "source_code",
+    "category": "large",
+    "file": "warehouse_management.py",
+    "expected_functions": 23,
+    "expected_classes": 5,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "boundary",
+      "state_transition"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_001",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_discount_calculator.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_002",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_even_checker.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_003",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_interest_calculator.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_004",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_inventory_manager.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_005",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_loan_eligibility.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_006",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_order_total.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_007",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_password_validator.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_008",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_prime_checker.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_009",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_reward_points.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "SRC_BUGGY_010",
+    "type": "source_code",
+    "category": "buggy",
+    "file": "buggy_shipping_fee.py",
+    "expected_functions": 1,
+    "expected_classes": 0,
+    "expected_test_categories": [
+      "unit",
+      "negative",
+      "edge",
+      "intent",
+      "logic_defect"
+    ]
+  },
+  {
+    "id": "US_BANKING_001",
+    "type": "user_story",
+    "category": "banking",
+    "story": "account_opening",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_002",
+    "type": "user_story",
+    "category": "banking",
+    "story": "atm_withdrawal",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_003",
+    "type": "user_story",
+    "category": "banking",
+    "story": "balance_transfer",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_004",
+    "type": "user_story",
+    "category": "banking",
+    "story": "credit_card_issuance",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_005",
+    "type": "user_story",
+    "category": "banking",
+    "story": "fixed_deposit_creation",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_006",
+    "type": "user_story",
+    "category": "banking",
+    "story": "fraud_detection",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_007",
+    "type": "user_story",
+    "category": "banking",
+    "story": "international_remittance",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_008",
+    "type": "user_story",
+    "category": "banking",
+    "story": "kyc_verification",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_009",
+    "type": "user_story",
+    "category": "banking",
+    "story": "loan_application",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_BANKING_010",
+    "type": "user_story",
+    "category": "banking",
+    "story": "upi_transfer",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_001",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "cart_management",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_002",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "checkout",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_003",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "coupon_application",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_004",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "inventory_updates",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_005",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "order_cancellation",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_006",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "product_reviews",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_007",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "refunds",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_008",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "returns",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_009",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "subscription_purchases",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_ECOMMERCE_010",
+    "type": "user_story",
+    "category": "ecommerce",
+    "story": "wishlist",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "payment",
+      "inventory"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_001",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "appointment_booking",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_002",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "doctor_scheduling",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_003",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "emergency_admission",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_004",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "insurance_approval",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_005",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "lab_report_access",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_006",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "medical_history_access",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_007",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "patient_registration",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_008",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "prescription_refill",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_009",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "telemedicine_consultation",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_HEALTHCARE_010",
+    "type": "user_story",
+    "category": "healthcare",
+    "story": "vaccination_booking",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "compliance"
+    ]
+  },
+  {
+    "id": "US_AUTH_001",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "account_lockout",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_002",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "account_recovery",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_003",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "device_verification",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_004",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "email_verification",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_005",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "login",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_006",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "mfa",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_007",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "password_reset",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_008",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "registration",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_009",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "role_based_access",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  },
+  {
+    "id": "US_AUTH_010",
+    "type": "user_story",
+    "category": "authentication",
+    "story": "session_timeout",
+    "expected_test_categories": [
+      "functional",
+      "negative",
+      "boundary",
+      "security",
+      "rate_limit"
+    ]
+  }
+]

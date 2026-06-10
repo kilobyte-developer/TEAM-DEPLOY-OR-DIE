@@ -2,6 +2,7 @@
 
 import { PageHeader } from "@/components/page-primitives"
 import { DemoBadge } from "@/components/testgenai/demo-badge"
+import { DownloadReportButton } from "@/components/testgenai/download-report-button"
 import { ExecutionCenter } from "@/components/testgenai/execution-center"
 import { InputModeSelector } from "@/components/testgenai/input-mode-selector"
 import { LogViewer } from "@/components/testgenai/log-viewer"
@@ -19,7 +20,12 @@ export function ExecutionView() {
             ? "Run generated code tests and inspect console output"
             : "Validate generated story cases and inspect execution logs"
         }
-        actions={<DemoBadge />}
+        actions={
+          <>
+            <DemoBadge />
+            <DownloadReportButton />
+          </>
+        }
       />
 
       <InputModeSelector />

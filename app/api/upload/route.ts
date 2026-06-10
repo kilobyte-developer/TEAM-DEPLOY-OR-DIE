@@ -4,7 +4,7 @@ import { join } from 'path'
 
 export const runtime = 'nodejs'
 
-const UPLOADS_DIR = join(process.cwd(), 'backend', 'uploads')
+const UPLOADS_DIR = '/tmp/testgenai_uploads'
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`

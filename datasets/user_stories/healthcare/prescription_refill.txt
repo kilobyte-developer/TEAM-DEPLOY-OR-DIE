@@ -1,0 +1,30 @@
+User Story: Prescription Refill
+
+As a patient or care coordinator, I want to use the prescription refill capability so that I can receive timely and secure care.
+
+Acceptance Criteria:
+1. The workflow must accept a valid request when all mandatory fields, eligibility rules, and permissions are satisfied.
+2. Patient record must exist or be created with required demographic fields.
+3. Appointment or service date cannot be in the past.
+4. Clinical documents must be visible only to authorized patient, doctor, or care team roles.
+5. Insurance or payment approval is required above USD 500.
+6. Emergency priority cases must bypass standard scheduling queue.
+7. Duplicate submissions within 2 minutes must be rejected unless the previous attempt failed before state change.
+
+Business Rules:
+- All monetary values must be rounded to 2 decimal places.
+- Audit trail must capture actor, timestamp, decision, and reference id.
+- Validation failures must not change committed balances, inventory, appointments, records, sessions, or entitlements.
+- Notifications must be sent only after durable state change.
+
+Validation Rules:
+- Required identifiers cannot be blank and must contain at least 4 characters.
+- Numeric limits must reject negative values, zero where a positive amount is required, and values above configured maximums.
+- Security-sensitive actions require current authentication and cannot trust client-side role claims.
+
+Edge Cases And Boundaries:
+- Exactly at the configured maximum limit.
+- One unit above and one unit below the configured maximum limit.
+- OTP exactly at 5 minutes, one second before expiry, and one second after expiry.
+- Duplicate request exactly at the 2 minute boundary.
+- Missing optional fields should not block submission when mandatory rules are satisfied.

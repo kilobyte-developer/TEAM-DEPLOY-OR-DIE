@@ -66,9 +66,37 @@ export interface TestArtifact {
   testCount: number
 }
 
+export type SemanticTestCategory = "unit" | "negative" | "edge" | "boundary"
+
+export interface SemanticTestCase {
+  id: string
+  title: string
+  input: string
+  expected: string
+  category: SemanticTestCategory
+}
+
+export interface PotentialLogicIssue {
+  message: string
+  confidence: "Low" | "Medium" | "High"
+}
+
+export interface SemanticFunctionTestSuite {
+  id: string
+  functionName: string
+  fileName: string
+  className?: string
+  potentialLogicIssues?: PotentialLogicIssue[]
+  unitTests: SemanticTestCase[]
+  negativeTests: SemanticTestCase[]
+  edgeCases: SemanticTestCase[]
+  boundaryCases: SemanticTestCase[]
+}
+
 export interface GeneratedTests {
   repository: string
   generatedAt: string
+  semanticSuites?: SemanticFunctionTestSuite[]
   unitTests: TestArtifact[]
   edgeCaseTests: TestArtifact[]
   summary: {
@@ -91,6 +119,10 @@ export interface UserStoryTestSuite {
   status: "Ready" | "Generated" | "Needs Review"
   wordCount: number
   generatedAt: string
+  provider?: {
+    provider: "openai" | "gemini" | "local"
+    model?: string
+  }
   positiveCases: UserStoryTestCase[]
   negativeCases: UserStoryTestCase[]
   edgeCases: UserStoryTestCase[]

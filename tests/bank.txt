@@ -1,0 +1,18 @@
+As a customer,
+
+I want to apply for a personal loan online
+
+so that I can receive financing without visiting a branch.
+
+Acceptance Criteria:
+
+1. Applicant age must be between 21 and 60 years.
+2. Monthly income must be greater than ₹25,000.
+3. Credit score must be above 700.
+4. Existing EMI obligations must not exceed 40% of monthly income.
+5. Loan amount cannot exceed ₹10,00,000.
+6. All required documents must be uploaded before submission.
+7. Duplicate applications within 30 days must be rejected.
+8. The system should instantly display approval or rejection.
+9. Approved applicants should receive a loan offer summary.
+10. Rejected applicants should receive the rejection reason.

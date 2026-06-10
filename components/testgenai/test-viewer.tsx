@@ -6,6 +6,7 @@ import { CodeViewer } from "@/components/code-viewer"
 import { BrutalButton, Panel } from "@/components/page-primitives"
 import { StateBlock } from "@/components/testgenai/state-block"
 import { useTestGenAI } from "@/components/testgenai-provider"
+import type { SemanticFunctionTestSuite, SemanticTestCase } from "@/lib/testgenai-types"
 import { cn } from "@/lib/utils"
 
 export function TestViewer() {
@@ -44,6 +45,7 @@ function TestViewerContent({ onGenerate }: { onGenerate: () => Promise<void> }) 
   const artifacts = suite.data
   const [tab, setTab] = useState<"unit" | "edge">("unit")
   const currentArtifact = tab === "unit" ? artifacts?.unitTests[0] : artifacts?.edgeCaseTests[0]
+  const semanticSuites = artifacts?.semanticSuites ?? []
 
   return (
     <Panel
@@ -101,12 +103,30 @@ function TestViewerContent({ onGenerate }: { onGenerate: () => Promise<void> }) 
           tone="error"
         />
       ) : currentArtifact ? (
-        <div className="p-4">
-          <CodeViewer
-            code={currentArtifact.code}
-            filename={currentArtifact.fileName}
-            meta={`${currentArtifact.label} | ${currentArtifact.testCount} cases`}
-          />
+        <div className="flex flex-col">
+          {semanticSuites.length > 0 ? (
+            <HumanReadableTestCases suites={semanticSuites} />
+          ) : (
+            <div className="border-b border-border px-4 py-4">
+              <StateBlock
+                title="No human-readable test cases returned."
+                message="Generated executable test code is available below."
+              />
+            </div>
+          )}
+
+          <div className="border-b border-border px-4 py-3">
+            <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">
+              Generated Test Code
+            </span>
+          </div>
+          <div className="p-4">
+            <CodeViewer
+              code={currentArtifact.code}
+              filename={currentArtifact.fileName}
+              meta={`${currentArtifact.label} | ${currentArtifact.testCount} cases`}
+            />
+          </div>
         </div>
       ) : (
         <StateBlock
@@ -115,5 +135,65 @@ function TestViewerContent({ onGenerate }: { onGenerate: () => Promise<void> }) 
         />
       )}
     </Panel>
+  )
+}
+
+function HumanReadableTestCases({ suites }: { suites: SemanticFunctionTestSuite[] }) {
+  return (
+    <div className="border-b border-border">
+      <div className="border-b border-border px-4 py-3">
+        <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">
+          Human-Readable Test Cases
+        </span>
+      </div>
+      {suites.map((suite) => (
+        <div key={suite.id} className="border-b border-border last:border-none">
+          <div className="border-b border-border px-4 py-4">
+            <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Function</span>
+            <div className="mt-2 text-sm font-mono font-bold text-foreground">
+              {suite.className ? `${suite.className}.${suite.functionName}` : suite.functionName}
+            </div>
+          </div>
+          <SemanticCaseSection title="Unit Tests" cases={suite.unitTests} />
+          <SemanticCaseSection title="Negative Tests" cases={suite.negativeTests} />
+          <SemanticCaseSection title="Edge Cases" cases={suite.edgeCases} />
+          <SemanticCaseSection title="Boundary Cases" cases={suite.boundaryCases} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SemanticCaseSection({ title, cases }: { title: string; cases: SemanticTestCase[] }) {
+  if (cases.length === 0) return null
+
+  return (
+    <div className="border-b border-border last:border-none">
+      <div className="border-b border-border px-4 py-3">
+        <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">{title}</span>
+      </div>
+      <div className="flex flex-col">
+        {cases.map((testCase) => (
+          <div key={testCase.id} className="border-b border-border px-4 py-4 last:border-none">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="border border-foreground/20 px-2 py-1 text-[9px] tracking-[0.15em] uppercase text-muted-foreground">
+                {testCase.id}
+              </span>
+              <span className="text-xs font-mono font-bold text-foreground">{testCase.title}</span>
+            </div>
+            <div className="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1fr]">
+              <div>
+                <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Input</span>
+                <p className="mt-2 whitespace-pre-line text-[11px] leading-5 text-foreground">{testCase.input}</p>
+              </div>
+              <div>
+                <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Expected</span>
+                <p className="mt-2 whitespace-pre-line text-[11px] leading-5 text-foreground">{testCase.expected}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
