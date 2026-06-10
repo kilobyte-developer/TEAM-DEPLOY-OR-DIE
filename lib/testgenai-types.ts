@@ -76,11 +76,17 @@ export interface SemanticTestCase {
   category: SemanticTestCategory
 }
 
+export interface PotentialLogicIssue {
+  message: string
+  confidence: "Low" | "Medium" | "High"
+}
+
 export interface SemanticFunctionTestSuite {
   id: string
   functionName: string
   fileName: string
   className?: string
+  potentialLogicIssues?: PotentialLogicIssue[]
   unitTests: SemanticTestCase[]
   negativeTests: SemanticTestCase[]
   edgeCases: SemanticTestCase[]
@@ -113,6 +119,10 @@ export interface UserStoryTestSuite {
   status: "Ready" | "Generated" | "Needs Review"
   wordCount: number
   generatedAt: string
+  provider?: {
+    provider: "openai" | "gemini" | "local"
+    model?: string
+  }
   positiveCases: UserStoryTestCase[]
   negativeCases: UserStoryTestCase[]
   edgeCases: UserStoryTestCase[]
