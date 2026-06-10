@@ -78,7 +78,7 @@ export function CodeUploadPanel() {
             Drag and drop source files
           </span>
           <span className="text-[11px] tracking-wider text-muted-foreground">
-            Click to browse and prepare a future POST /upload integration.
+            Click to browse and upload a Python file into the live MVP pipeline.
           </span>
         </div>
 

@@ -5,6 +5,15 @@ import { BrutalButton, Panel } from "@/components/page-primitives"
 import { StateBlock } from "@/components/testgenai/state-block"
 import { useTestGenAI } from "@/components/testgenai-provider"
 
+function formatGeneratedAt(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value))
+}
+
 export function AnalysisPanel() {
   const { state, analyzeWorkspace } = useTestGenAI()
   const analysis = state.analysis
@@ -61,7 +70,7 @@ export function AnalysisPanel() {
   }
 
   return (
-    <Panel label="analysis.panel" meta={analysis.data.repository}>
+    <Panel label="analysis.panel" meta={`${analysis.data.repository} | ${formatGeneratedAt(analysis.data.generatedAt)}`}>
       <div className="grid grid-cols-1 gap-0 border-b border-border md:grid-cols-3">
         <div className="border-b border-border px-4 py-4 md:border-b-0 md:border-r">
           <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Functions Detected</span>
@@ -175,6 +184,23 @@ export function AnalysisPanel() {
                 </div>
               </div>
             ))}
+            <div className="border-t border-border px-4 py-4">
+              <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Imports</span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {analysis.data.imports.length > 0 ? (
+                  analysis.data.imports.map((item) => (
+                    <span
+                      key={item}
+                      className="border border-foreground/20 px-2 py-1 text-[9px] tracking-[0.15em] uppercase text-muted-foreground"
+                    >
+                      {item}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[11px] text-muted-foreground">No imports detected.</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

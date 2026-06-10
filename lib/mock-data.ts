@@ -103,6 +103,7 @@ export const demoUploadedFiles: UploadedSourceFile[] = [
 export const demoAnalysisResult: AnalysisResult = {
   repository: "testgenai-demo",
   generatedAt: "2026-06-10T09:20:00.000Z",
+  imports: ["bcrypt", "jwt", "email-validator", "zod", "date-fns"],
   dependencies: ["bcrypt", "jwt", "email-validator", "zod", "date-fns"],
   classes: [
     {

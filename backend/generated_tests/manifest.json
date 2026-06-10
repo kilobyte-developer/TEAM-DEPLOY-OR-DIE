@@ -1,0 +1,76 @@
+{
+  "sourceFileName": "calculator.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\uploads\\calculator.py",
+  "moduleName": "calculator",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_calculator_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_calculator_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-10T05:09:02.913675Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "add",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "a",
+            "type": "Any"
+          },
+          {
+            "name": "b",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function add extracted from uploaded source."
+      },
+      {
+        "id": "fn-2",
+        "name": "subtract",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "a",
+            "type": "Any"
+          },
+          {
+            "name": "b",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function subtract extracted from uploaded source."
+      },
+      {
+        "id": "fn-3",
+        "name": "divide",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "a",
+            "type": "Any"
+          },
+          {
+            "name": "b",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function divide extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 4,
+    "edgeTestsGenerated": 3
+  }
+}

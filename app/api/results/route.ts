@@ -1,32 +1,27 @@
-import { NextResponse } from 'next/server';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { readFile } from 'fs/promises'
+import { NextResponse } from 'next/server'
+import { join } from 'path'
 
-const REPORTS_DIR = join(process.cwd(), 'backend', 'reports');
+export const runtime = 'nodejs'
 
-interface ResultsResponse {
-  tests_generated: number;
-  passed: number;
-  failed: number;
-  pass_rate: number;
-}
+const REPORTS_DIR = join(process.cwd(), 'backend', 'reports')
 
 export async function GET() {
   try {
-    const resultsPath = join(REPORTS_DIR, 'results.json');
-    const fileContent = await readFile(resultsPath, 'utf-8');
-    const results: ResultsResponse = JSON.parse(fileContent);
-
-    return NextResponse.json(results);
+    const resultsPath = join(REPORTS_DIR, 'results.json')
+    const fileContent = await readFile(resultsPath, 'utf-8')
+    return NextResponse.json(JSON.parse(fileContent))
   } catch {
-    // File doesn't exist or is malformed — return default empty results
-    const defaultResults: ResultsResponse = {
-      tests_generated: 0,
-      passed: 0,
-      failed: 0,
-      pass_rate: 0,
-    };
-
-    return NextResponse.json(defaultResults);
+    return NextResponse.json({
+      mode: 'source-code',
+      status: 'idle',
+      generatedAt: new Date().toISOString(),
+      totalTests: 0,
+      passedTests: 0,
+      failedTests: 0,
+      executionTime: '0.00s',
+      passRate: 0,
+      logs: [],
+    })
   }
 }

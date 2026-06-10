@@ -53,6 +53,7 @@ export interface AnalysisResult {
   generatedAt: string
   functions: AnalysisFunction[]
   classes: AnalysisClass[]
+  imports: string[]
   dependencies: string[]
 }
 

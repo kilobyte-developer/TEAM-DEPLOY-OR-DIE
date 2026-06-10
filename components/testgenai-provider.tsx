@@ -8,14 +8,11 @@ import {
   useReducer,
   type ReactNode,
 } from "react"
-import { DEMO_MODE_ENABLED, USER_STORY_PLACEHOLDER, getWordCount } from "@/lib/mock-data"
 import {
   analyzeCode,
   generateTests,
   generateUserStoryTests,
   getCoverage,
-  getDemoWorkspace,
-  getEvaluationResults,
   runTests,
   uploadFile,
 } from "@/lib/services/testgenai"
@@ -33,6 +30,10 @@ import type {
   UserStoryTestSuite,
 } from "@/lib/testgenai-types"
 
+function getWordCount(value: string) {
+  return value.trim() ? value.trim().split(/\s+/).length : 0
+}
+
 function createAsyncSlice<T>(data: T | null, status: AsyncSlice<T>["status"] = "idle"): AsyncSlice<T> {
   return {
     status,
@@ -42,13 +43,13 @@ function createAsyncSlice<T>(data: T | null, status: AsyncSlice<T>["status"] = "
 }
 
 const initialState: TestGenAIState = {
-  demoMode: DEMO_MODE_ENABLED,
+  demoMode: false,
   inputMode: "source-code",
   uploadStatus: "idle",
   uploadError: null,
   uploadedFiles: [],
   selectedFileId: null,
-  userStoryInput: USER_STORY_PLACEHOLDER,
+  userStoryInput: "",
   analysis: createAsyncSlice<AnalysisResult>(null),
   generatedTests: createAsyncSlice<GeneratedTests>(null),
   userStoryTests: createAsyncSlice<UserStoryTestSuite>(null),
@@ -59,7 +60,6 @@ const initialState: TestGenAIState = {
 }
 
 type Action =
-  | { type: "BOOTSTRAP"; payload: Partial<TestGenAIState> }
   | { type: "SET_INPUT_MODE"; payload: InputMode }
   | { type: "SET_SELECTED_FILE"; payload: string | null }
   | { type: "SET_USER_STORY_INPUT"; payload: string }
@@ -101,11 +101,6 @@ function resetSourceWorkflow(state: TestGenAIState) {
 
 function reducer(state: TestGenAIState, action: Action): TestGenAIState {
   switch (action.type) {
-    case "BOOTSTRAP":
-      return {
-        ...state,
-        ...action.payload,
-      }
     case "SET_INPUT_MODE":
       return {
         ...state,
@@ -128,6 +123,10 @@ function reducer(state: TestGenAIState, action: Action): TestGenAIState {
         uploadError: null,
         uploadedFiles: [...action.payload, ...state.uploadedFiles],
         selectedFileId: action.payload[0]?.id ?? state.selectedFileId,
+        analysis: createAsyncSlice<AnalysisResult>(null),
+        generatedTests: createAsyncSlice<GeneratedTests>(null),
+        execution: createAsyncSlice<ExecutionResult>(null),
+        coverage: createAsyncSlice<CoverageReport>(null),
       }
     case "UPLOAD_SUCCESS": {
       const uploadedIds = new Set(action.payload.map((file) => file.id))
@@ -327,6 +326,30 @@ function deriveStats(state: TestGenAIState): AppStats {
   }
 }
 
+function deriveEvaluationResults(state: TestGenAIState): TestGenAIState["evaluationResults"] {
+  if (state.inputMode !== "source-code" || state.uploadedFiles.length === 0 || !state.generatedTests.data) {
+    return []
+  }
+
+  const targetFile = state.uploadedFiles.find((file) => file.id === state.selectedFileId) ?? state.uploadedFiles[0]
+  const testsGenerated =
+    state.generatedTests.data.summary.unitTestsGenerated + state.generatedTests.data.summary.edgeTestsGenerated
+  const passed = state.execution.data?.passedTests ?? 0
+  const failed = state.execution.data?.failedTests ?? 0
+  const coverage = state.coverage.data?.coveragePercent ?? 0
+
+  return [
+    {
+      repository: targetFile?.name.replace(/\.py$/i, "") ?? "local-workspace",
+      testsGenerated,
+      passed,
+      failed,
+      coverage,
+      status: failed === 0 && testsGenerated > 0 ? "PASS" : passed > 0 || coverage > 0 ? "PARTIAL" : "FAIL",
+    },
+  ]
+}
+
 type TestGenAIContextValue = {
   state: TestGenAIState
   stats: AppStats
@@ -349,45 +372,25 @@ const TestGenAIContext = createContext<TestGenAIContextValue | null>(null)
 export function TestGenAIProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  useEffect(() => {
-    let mounted = true
-
-    async function bootstrap() {
-      const [workspace, evaluationResults] = await Promise.all([
-        getDemoWorkspace(),
-        getEvaluationResults(),
-      ])
-
-      if (!mounted) return
-
-      dispatch({
-        type: "BOOTSTRAP",
-        payload: {
-          uploadedFiles: workspace.files,
-          selectedFileId: workspace.files[0]?.id ?? null,
-          userStoryInput: workspace.userStoryInput,
-          analysis: createAsyncSlice(workspace.analysis, "success"),
-          generatedTests: createAsyncSlice(workspace.generatedTests, "success"),
-          userStoryTests: createAsyncSlice(workspace.userStoryTests, "success"),
-          execution: createAsyncSlice(workspace.execution, "success"),
-          coverage: createAsyncSlice(workspace.coverage, "success"),
-          evaluationResults,
-          activity: workspace.activity,
-        },
-      })
-    }
-
-    void bootstrap()
-
-    return () => {
-      mounted = false
-    }
-  }, [])
-
   const selectedFile =
     state.uploadedFiles.find((file) => file.id === state.selectedFileId) ?? null
   const userStoryWordCount = getWordCount(state.userStoryInput)
   const stats = deriveStats(state)
+
+  useEffect(() => {
+    const nextEvaluationResults = deriveEvaluationResults(state)
+    if (JSON.stringify(nextEvaluationResults) !== JSON.stringify(state.evaluationResults)) {
+      dispatch({ type: "SET_EVALUATION_RESULTS", payload: nextEvaluationResults })
+    }
+  }, [
+    state.inputMode,
+    state.uploadedFiles,
+    state.selectedFileId,
+    state.generatedTests.data,
+    state.execution.data,
+    state.coverage.data,
+    state.evaluationResults,
+  ])
 
   const setInputMode = (mode: InputMode) => {
     startTransition(() => {
@@ -408,8 +411,8 @@ export function TestGenAIProvider({ children }: { children: ReactNode }) {
     if (list.length === 0) return
 
     const optimisticFiles = list.map((file, index) => ({
-      id: `local-${Date.now()}-${index}`,
-      language: "Detecting",
+      id: file.name,
+      language: "Python",
       name: file.name,
       repository: "local-workspace",
       sizeBytes: file.size,
@@ -422,17 +425,11 @@ export function TestGenAIProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "UPLOAD_START", payload: optimisticFiles })
 
     try {
-      const uploaded = await uploadFile(
-        list.map((file, index) => Object.assign(file, { id: optimisticFiles[index]?.id })),
-      )
-      const normalized = uploaded.map((file, index) => ({
-        ...file,
-        id: optimisticFiles[index]?.id ?? file.id,
-      }))
-      dispatch({ type: "UPLOAD_SUCCESS", payload: normalized })
+      const uploaded = await uploadFile(list)
+      dispatch({ type: "UPLOAD_SUCCESS", payload: uploaded })
       dispatch({
         type: "PUSH_ACTIVITY",
-        payload: createActivityItem("upload", "Source Files Uploaded", `${normalized.length} new files staged`),
+        payload: createActivityItem("upload", "Source Files Uploaded", `${uploaded.length} Python file(s) uploaded`),
       })
     } catch (error) {
       dispatch({
@@ -447,11 +444,12 @@ export function TestGenAIProvider({ children }: { children: ReactNode }) {
   }
 
   const analyzeWorkspace = async () => {
-    if (state.uploadedFiles.length === 0) return
+    const file = selectedFile ?? state.uploadedFiles[0]
+    if (!file) return
 
     dispatch({ type: "ANALYSIS_START" })
     try {
-      const analysis = await analyzeCode(state.uploadedFiles)
+      const analysis = await analyzeCode(file)
       dispatch({ type: "ANALYSIS_SUCCESS", payload: analysis })
       dispatch({
         type: "PUSH_ACTIVITY",
@@ -470,11 +468,12 @@ export function TestGenAIProvider({ children }: { children: ReactNode }) {
   }
 
   const generateSourceCodeTestsAction = async () => {
-    if (state.uploadedFiles.length === 0) return
+    const file = selectedFile ?? state.uploadedFiles[0]
+    if (!file) return
 
     dispatch({ type: "TESTS_START" })
     try {
-      const tests = await generateTests(state.uploadedFiles)
+      const tests = await generateTests(file)
       dispatch({ type: "TESTS_SUCCESS", payload: tests })
       dispatch({
         type: "PUSH_ACTIVITY",
