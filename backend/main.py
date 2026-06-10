@@ -23,9 +23,9 @@ app.add_middleware(
 )
 
 BASE_DIR = Path(__file__).parent
-UPLOADS_DIR = BASE_DIR / "uploads"
-GENERATED_TESTS_DIR = BASE_DIR / "generated_tests"
-REPORTS_DIR = BASE_DIR / "reports"
+UPLOADS_DIR = Path("/tmp/testgenai_uploads")
+GENERATED_TESTS_DIR = Path("/tmp/testgenai_generated_tests")
+REPORTS_DIR = Path("/tmp/testgenai_reports")
 MANIFEST_PATH = GENERATED_TESTS_DIR / "manifest.json"
 COVERAGE_JSON_PATH = REPORTS_DIR / "coverage.json"
 RESULTS_PATH = REPORTS_DIR / "results.json"

@@ -6,7 +6,7 @@ export const runtime = 'nodejs'
 
 const BACKEND_DIR = join(process.cwd(), 'backend')
 const ENGINE_PATH = join(BACKEND_DIR, 'mvp_engine.py')
-const UPLOADS_DIR = join(BACKEND_DIR, 'uploads')
+const UPLOADS_DIR = '/tmp/testgenai_uploads'
 const PYTHON_CMD = process.platform === 'win32' ? 'python' : 'python3'
 
 export async function POST(request: NextRequest) {
