@@ -1,82 +1,182 @@
 {
   "mode": "source-code",
   "status": "completed",
-  "generatedAt": "2026-06-10T05:09:09.751669Z",
-  "totalTests": 7,
-  "passedTests": 7,
+  "generatedAt": "2026-06-10T08:17:44.403959Z",
+  "totalTests": 27,
+  "passedTests": 27,
   "failedTests": 0,
-  "executionTime": "0.60s",
+  "executionTime": "0.77s",
   "passRate": 100.0,
   "logs": [
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "info",
-      "message": "============================= test session starts ============================="
+      "message": "============================= test session starts =============================="
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "info",
-      "message": "platform win32 -- Python 3.11.0, pytest-9.0.3, pluggy-1.6.0 -- C:\\Users\\Atharva Funde\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+      "message": "platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/venv/bin/python3"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "info",
       "message": "cachedir: .pytest_cache"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "info",
-      "message": "rootdir: C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend"
+      "message": "rootdir: /home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "info",
-      "message": "plugins: anyio-4.11.0, cov-7.1.0"
+      "message": "plugins: anyio-4.13.0, cov-7.1.0"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "info",
-      "message": "collecting ... collected 7 items"
+      "message": "collecting ... collected 27 items"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "pass",
-      "message": "generated_tests/test_calculator_unit.py::test_module_imports_successfully PASSED [ 14%]"
+      "message": "generated_tests/test_calculator_unit.py::test_module_imports_successfully PASSED [  3%]"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "pass",
-      "message": "generated_tests/test_calculator_unit.py::test_add_is_defined PASSED      [ 28%]"
+      "message": "generated_tests/test_calculator_unit.py::test_add_is_defined PASSED      [  7%]"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "pass",
-      "message": "generated_tests/test_calculator_unit.py::test_subtract_is_defined PASSED [ 42%]"
+      "message": "generated_tests/test_calculator_unit.py::test_subtract_is_defined PASSED [ 11%]"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "pass",
-      "message": "generated_tests/test_calculator_unit.py::test_divide_is_defined PASSED   [ 57%]"
+      "message": "generated_tests/test_calculator_unit.py::test_multiply_is_defined PASSED [ 14%]"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "pass",
-      "message": "generated_tests/test_calculator_edge.py::test_add_rejects_missing_required_arguments PASSED [ 71%]"
+      "message": "generated_tests/test_calculator_unit.py::test_divide_is_defined PASSED   [ 18%]"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "pass",
-      "message": "generated_tests/test_calculator_edge.py::test_subtract_rejects_missing_required_arguments PASSED [ 85%]"
+      "message": "generated_tests/test_calculator_unit.py::test_power_is_defined PASSED    [ 22%]"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
       "level": "pass",
-      "message": "generated_tests/test_calculator_edge.py::test_divide_rejects_missing_required_arguments PASSED [100%]"
+      "message": "generated_tests/test_calculator_unit.py::test_square_root_is_defined PASSED [ 25%]"
     },
     {
-      "timestamp": "10:39:09",
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_percentage_is_defined PASSED [ 29%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_is_even_is_defined PASSED  [ 33%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_factorial_is_defined PASSED [ 37%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_clamp_is_defined PASSED    [ 40%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_calculator___init___is_available PASSED [ 44%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_calculator_compute_is_available PASSED [ 48%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_calculator_clear_history_is_available PASSED [ 51%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_calculator_get_history_is_available PASSED [ 55%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_calculator_is_defined PASSED [ 59%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_unit.py::test_calculator_instantiates PASSED [ 62%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_add_rejects_missing_required_arguments PASSED [ 66%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_subtract_rejects_missing_required_arguments PASSED [ 70%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_multiply_rejects_missing_required_arguments PASSED [ 74%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_divide_rejects_missing_required_arguments PASSED [ 77%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_power_rejects_missing_required_arguments PASSED [ 81%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_square_root_rejects_missing_required_arguments PASSED [ 85%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_percentage_rejects_missing_required_arguments PASSED [ 88%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_is_even_rejects_missing_required_arguments PASSED [ 92%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_factorial_rejects_missing_required_arguments PASSED [ 96%]"
+    },
+    {
+      "timestamp": "13:47:44",
+      "level": "pass",
+      "message": "generated_tests/test_calculator_edge.py::test_clamp_rejects_missing_required_arguments PASSED [100%]"
+    },
+    {
+      "timestamp": "13:47:44",
       "level": "info",
-      "message": "============================== 7 passed in 0.05s =============================="
+      "message": "============================== 27 passed in 0.07s =============================="
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
   "sourceFileName": "calculator.py",
-  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\uploads\\calculator.py",
+  "sourceFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/uploads/calculator.py",
   "moduleName": "calculator",
-  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_calculator_unit.py",
-  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_calculator_edge.py",
-  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\generated_tests\\test_generated.py",
+  "unitTestFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/generated_tests/test_calculator_unit.py",
+  "edgeTestFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/generated_tests/test_calculator_edge.py",
+  "combinedTestFilePath": "/home/yogesh/Desktop/Capg-Hack/TEAM-DEPLOY-OR-DIE/backend/generated_tests/test_generated.py",
   "analysis": {
     "repository": "local-workspace",
-    "generatedAt": "2026-06-10T05:09:02.913675Z",
+    "generatedAt": "2026-06-10T08:17:39.633492Z",
     "functions": [
       {
         "id": "fn-1",
@@ -16,16 +16,19 @@
         "parameters": [
           {
             "name": "a",
-            "type": "Any"
+            "type": "float"
           },
           {
             "name": "b",
-            "type": "Any"
+            "type": "float"
           }
         ],
-        "returnType": "Any",
-        "dependencies": [],
-        "description": "Function add extracted from uploaded source."
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return the sum of two numbers."
       },
       {
         "id": "fn-2",
@@ -34,43 +37,275 @@
         "parameters": [
           {
             "name": "a",
-            "type": "Any"
+            "type": "float"
           },
           {
             "name": "b",
-            "type": "Any"
+            "type": "float"
           }
         ],
-        "returnType": "Any",
-        "dependencies": [],
-        "description": "Function subtract extracted from uploaded source."
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return the difference of two numbers."
       },
       {
         "id": "fn-3",
+        "name": "multiply",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "a",
+            "type": "float"
+          },
+          {
+            "name": "b",
+            "type": "float"
+          }
+        ],
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return the product of two numbers."
+      },
+      {
+        "id": "fn-4",
         "name": "divide",
         "fileName": "calculator.py",
         "parameters": [
           {
             "name": "a",
-            "type": "Any"
+            "type": "float"
           },
           {
             "name": "b",
-            "type": "Any"
+            "type": "float"
           }
         ],
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return the quotient of two numbers. Raises ValueError on division by zero."
+      },
+      {
+        "id": "fn-5",
+        "name": "power",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "base",
+            "type": "float"
+          },
+          {
+            "name": "exp",
+            "type": "float"
+          }
+        ],
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return base raised to the power of exp."
+      },
+      {
+        "id": "fn-6",
+        "name": "square_root",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "n",
+            "type": "float"
+          }
+        ],
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return the square root of n. Raises ValueError for negative input."
+      },
+      {
+        "id": "fn-7",
+        "name": "percentage",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "value",
+            "type": "float"
+          },
+          {
+            "name": "total",
+            "type": "float"
+          }
+        ],
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return what percentage value is of total. Raises ValueError if total is zero."
+      },
+      {
+        "id": "fn-8",
+        "name": "is_even",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "n",
+            "type": "int"
+          }
+        ],
+        "returnType": "bool",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return True if n is even, False otherwise."
+      },
+      {
+        "id": "fn-9",
+        "name": "factorial",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "n",
+            "type": "int"
+          }
+        ],
+        "returnType": "int",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return factorial of n. Raises ValueError for negative input."
+      },
+      {
+        "id": "fn-10",
+        "name": "clamp",
+        "fileName": "calculator.py",
+        "parameters": [
+          {
+            "name": "value",
+            "type": "float"
+          },
+          {
+            "name": "min_val",
+            "type": "float"
+          },
+          {
+            "name": "max_val",
+            "type": "float"
+          }
+        ],
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Clamp value between min_val and max_val."
+      },
+      {
+        "id": "fn-11",
+        "name": "__init__",
+        "fileName": "calculator.py",
+        "className": "Calculator",
+        "parameters": [],
         "returnType": "Any",
-        "dependencies": [],
-        "description": "Function divide extracted from uploaded source."
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Method Calculator.__init__ extracted from uploaded source."
+      },
+      {
+        "id": "fn-12",
+        "name": "compute",
+        "fileName": "calculator.py",
+        "className": "Calculator",
+        "parameters": [
+          {
+            "name": "a",
+            "type": "float"
+          },
+          {
+            "name": "operator",
+            "type": "str"
+          },
+          {
+            "name": "b",
+            "type": "float"
+          }
+        ],
+        "returnType": "float",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Perform a calculation based on operator string (+, -, *, /)."
+      },
+      {
+        "id": "fn-13",
+        "name": "clear_history",
+        "fileName": "calculator.py",
+        "className": "Calculator",
+        "parameters": [],
+        "returnType": "Any",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Clear the operation history."
+      },
+      {
+        "id": "fn-14",
+        "name": "get_history",
+        "fileName": "calculator.py",
+        "className": "Calculator",
+        "parameters": [],
+        "returnType": "list[str]",
+        "dependencies": [
+          "math",
+          "typing"
+        ],
+        "description": "Return the operation history."
       }
     ],
-    "classes": [],
-    "imports": [],
-    "dependencies": []
+    "classes": [
+      {
+        "id": "class-1",
+        "name": "Calculator",
+        "fileName": "calculator.py",
+        "methods": [
+          "__init__",
+          "compute",
+          "clear_history",
+          "get_history"
+        ],
+        "dependencies": [
+          "math",
+          "typing"
+        ]
+      }
+    ],
+    "imports": [
+      "math",
+      "typing"
+    ],
+    "dependencies": [
+      "math",
+      "typing"
+    ]
   },
   "summary": {
     "filesCovered": 1,
-    "unitTestsGenerated": 4,
-    "edgeTestsGenerated": 3
+    "unitTestsGenerated": 17,
+    "edgeTestsGenerated": 10
   }
 }
