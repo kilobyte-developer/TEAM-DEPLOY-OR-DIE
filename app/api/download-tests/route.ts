@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-const GENERATED_TESTS_DIR = join(process.cwd(), 'backend', 'generated_tests');
+const GENERATED_TESTS_DIR = '/tmp/testgenai_generated_tests';
 
 export async function GET() {
   try {
