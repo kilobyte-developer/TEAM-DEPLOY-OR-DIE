@@ -7,6 +7,7 @@ export const runtime = 'nodejs'
 const BACKEND_DIR = join(process.cwd(), 'backend')
 const ENGINE_PATH = join(BACKEND_DIR, 'mvp_engine.py')
 const UPLOADS_DIR = join(BACKEND_DIR, 'uploads')
+const PYTHON_CMD = process.platform === 'win32' ? 'python' : 'python3'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const filePath = join(UPLOADS_DIR, fileName)
-    const result = spawnSync('python', [ENGINE_PATH, 'analyze', filePath], {
+    const result = spawnSync(PYTHON_CMD, [ENGINE_PATH, 'analyze', filePath], {
       cwd: BACKEND_DIR,
       encoding: 'utf-8',
     })
