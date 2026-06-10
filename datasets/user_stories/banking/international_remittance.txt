@@ -1,0 +1,30 @@
+User Story: International Remittance
+
+As a retail banking customer, I want to use the international remittance capability so that I can complete regulated financial activity safely.
+
+Acceptance Criteria:
+1. The workflow must accept a valid request when all mandatory fields, eligibility rules, and permissions are satisfied.
+2. Amount must be greater than 0 and cannot exceed USD 5000 per transaction.
+3. Daily total cannot exceed USD 20000 per customer.
+4. OTP is required above USD 1000 and expires within 5 minutes.
+5. Recipient account must exist and customer must have sufficient available balance.
+6. System must show confirmation reference and must not debit on failed validation.
+7. Duplicate submissions within 2 minutes must be rejected unless the previous attempt failed before state change.
+
+Business Rules:
+- All monetary values must be rounded to 2 decimal places.
+- Audit trail must capture actor, timestamp, decision, and reference id.
+- Validation failures must not change committed balances, inventory, appointments, records, sessions, or entitlements.
+- Notifications must be sent only after durable state change.
+
+Validation Rules:
+- Required identifiers cannot be blank and must contain at least 4 characters.
+- Numeric limits must reject negative values, zero where a positive amount is required, and values above configured maximums.
+- Security-sensitive actions require current authentication and cannot trust client-side role claims.
+
+Edge Cases And Boundaries:
+- Exactly at the configured maximum limit.
+- One unit above and one unit below the configured maximum limit.
+- OTP exactly at 5 minutes, one second before expiry, and one second after expiry.
+- Duplicate request exactly at the 2 minute boundary.
+- Missing optional fields should not block submission when mandatory rules are satisfied.
