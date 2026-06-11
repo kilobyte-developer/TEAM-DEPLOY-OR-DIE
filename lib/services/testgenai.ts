@@ -1,14 +1,17 @@
 import type {
   AnalysisResult,
+  AnalyticsDashboardData,
   CoverageReport,
   ExecutionResult,
   InputMode,
   GeneratedTests,
+  PastRecordDetails,
+  PastRecordSummary,
   UploadedSourceFile,
   UserStoryTestSuite,
 } from '@/lib/testgenai-types'
 
-const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ?? 'http://127.0.0.1:8000'
+const FASTAPI_BASE_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ?? 'https://team-deploy-or-die.onrender.com'
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {
   const payload = await response.json().catch(() => null)
@@ -84,7 +87,7 @@ export async function runTests(mode: InputMode): Promise<ExecutionResult> {
     throw new Error('Test execution is only available for source code mode in MVP.')
   }
 
-  const response = await fetch(`${FASTAPI_BASE_URL}/run-tests`, {
+  const response = await fetch('/api/run-tests', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -98,4 +101,32 @@ export async function runTests(mode: InputMode): Promise<ExecutionResult> {
 export async function getCoverage(): Promise<CoverageReport> {
   const response = await fetch(`${FASTAPI_BASE_URL}/coverage`)
   return parseJsonResponse<CoverageReport>(response)
+}
+
+export async function getPastRecords(): Promise<PastRecordSummary[]> {
+  const response = await fetch('/api/history', { cache: 'no-store' })
+  const payload = await parseJsonResponse<{ records: PastRecordSummary[] }>(response)
+  return payload.records
+}
+
+export async function getPastRecordDetails(id: string): Promise<PastRecordDetails> {
+  const response = await fetch(`/api/history/${encodeURIComponent(id)}`, { cache: 'no-store' })
+  return parseJsonResponse<PastRecordDetails>(response)
+}
+
+export async function deletePastRecords(password: string, count: number): Promise<{ deleted: number; requested: number }> {
+  const response = await fetch('/api/history', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password, count }),
+  })
+
+  return parseJsonResponse<{ deleted: number; requested: number }>(response)
+}
+
+export async function getAnalyticsDashboard(): Promise<AnalyticsDashboardData> {
+  const response = await fetch('/api/dashboard', { cache: 'no-store' })
+  return parseJsonResponse<AnalyticsDashboardData>(response)
 }

@@ -9,6 +9,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from database_service import testgenai_database
 from mvp_engine import extract_function_spans
 
 
@@ -23,9 +24,9 @@ app.add_middleware(
 )
 
 BASE_DIR = Path(__file__).parent
-UPLOADS_DIR = BASE_DIR / "uploads"
-GENERATED_TESTS_DIR = BASE_DIR / "generated_tests"
-REPORTS_DIR = BASE_DIR / "reports"
+UPLOADS_DIR = Path("/tmp/testgenai_uploads")
+GENERATED_TESTS_DIR = Path("/tmp/testgenai_generated_tests")
+REPORTS_DIR = Path("/tmp/testgenai_reports")
 MANIFEST_PATH = GENERATED_TESTS_DIR / "manifest.json"
 COVERAGE_JSON_PATH = REPORTS_DIR / "coverage.json"
 RESULTS_PATH = REPORTS_DIR / "results.json"
@@ -198,6 +199,7 @@ def run_tests(request: RunTestsRequest):
 
     payload_data = payload.model_dump() if hasattr(payload, "model_dump") else payload.dict()
     RESULTS_PATH.write_text(json.dumps(payload_data, indent=2), encoding="utf-8")
+    testgenai_database.record_execution(str(manifest.get("sourceFileName", "")), payload_data)
     return payload
 
 
@@ -266,6 +268,8 @@ def get_coverage():
         ],
     )
 
+    response_data = response.model_dump() if hasattr(response, "model_dump") else response.dict()
+    testgenai_database.record_coverage(source_file_path.name, response_data)
     return response
 
 

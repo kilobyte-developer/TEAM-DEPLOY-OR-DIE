@@ -209,7 +209,170 @@ def build_header(module_name: str, upload_dir: Path, dependencies: list[str], in
     )
 
 
-def build_unit_tests(source_code: str, file_path: Path) -> tuple[str, int]:
+def sanitize_test_name(value: str) -> str:
+    cleaned = "".join(character.lower() if character.isalnum() else "_" for character in value)
+    while "__" in cleaned:
+        cleaned = cleaned.replace("__", "_")
+    return cleaned.strip("_") or "semantic_case"
+
+
+def parse_semantic_input(input_text: str) -> dict[str, Any] | None:
+    if not input_text or input_text == "No input":
+        return {}
+
+    values: dict[str, Any] = {}
+    for raw_line in input_text.splitlines():
+        line = raw_line.strip()
+        if not line or "=" not in line:
+            return None
+        name, raw_value = line.split("=", 1)
+        name = name.strip()
+        if not name.isidentifier():
+            return None
+        try:
+            values[name] = ast.literal_eval(raw_value.strip())
+        except Exception:
+            return None
+    return values
+
+
+def expected_boolean(expected: str) -> bool | None:
+    normalized = expected.strip()
+    if normalized.startswith("True"):
+        return True
+    if normalized.startswith("False"):
+        return False
+    return None
+
+
+def expected_literal(expected: str) -> Any:
+    first_line = expected.strip().splitlines()[0].strip()
+    try:
+        value = ast.literal_eval(first_line)
+    except Exception:
+        return None
+    if isinstance(value, (str, int, float, bool, list, tuple, dict)) or value is None:
+        return value
+    return None
+
+
+def semantic_assertion_kind(expected: str) -> tuple[str, Any] | None:
+    boolean = expected_boolean(expected)
+    if boolean is not None:
+        return ("boolean", boolean)
+
+    literal = expected_literal(expected)
+    if literal is not None:
+        return ("literal", literal)
+
+    lowered = expected.lower()
+    if "discounted amount is less than the original price" in lowered:
+        return ("less_than_first_input", None)
+    if "discounted amount is between 0 and the original price" in lowered:
+        return ("between_zero_and_first_input", None)
+    if "discounted amount remains 0" in lowered:
+        return ("literal", 0)
+
+    return None
+
+
+def render_call_arguments(parameters: list[dict[str, str]], values: dict[str, Any]) -> str:
+    arguments: list[str] = []
+    for parameter in parameters:
+        name = parameter["name"]
+        if name not in values:
+            return ""
+        arguments.append(repr(values[name]))
+    return ", ".join(arguments)
+
+
+def build_semantic_assertion_tests(semantic_suites: list[dict[str, Any]], analysis: dict[str, Any]) -> tuple[list[str], int]:
+    function_lookup = {
+        (function.get("className"), function["name"]): function
+        for function in analysis["functions"]
+    }
+    lines: list[str] = []
+    count = 0
+    used_names: set[str] = set()
+    used_assertions: set[tuple[str, str, str]] = set()
+
+    for suite in semantic_suites:
+        class_name = suite.get("className")
+        if class_name:
+            continue
+
+        function_name = suite["functionName"]
+        function = function_lookup.get((None, function_name))
+        if not function:
+            continue
+
+        semantic_cases = (
+            suite.get("unitTests", [])
+            + suite.get("edgeCases", [])
+            + suite.get("boundaryCases", [])
+        )
+
+        for item in semantic_cases:
+            values = parse_semantic_input(item.get("input", ""))
+            assertion = semantic_assertion_kind(item.get("expected", ""))
+            if values is None or assertion is None:
+                continue
+
+            call_arguments = render_call_arguments(function["parameters"], values)
+            if call_arguments == "" and function["parameters"]:
+                continue
+            assertion_key = (function_name, call_arguments, repr(assertion))
+            if assertion_key in used_assertions:
+                continue
+            used_assertions.add(assertion_key)
+
+            base_name = sanitize_test_name(f'{function_name}_{item.get("title", item.get("id", "semantic"))}')
+            test_name = f"test_{base_name}_semantic_behavior"
+            suffix = 2
+            while test_name in used_names:
+                test_name = f"test_{base_name}_semantic_behavior_{suffix}"
+                suffix += 1
+            used_names.add(test_name)
+
+            expected_text = item.get("expected", "").split("Potential Logic Issue:")[0].strip()
+            input_text = item.get("input", "")
+            kind, expected_value = assertion
+
+            lines.append(f"def {test_name}():")
+            lines.append("    module = load_module()")
+            lines.append(f'    actual = getattr(module, "{function_name}")({call_arguments})')
+            lines.append(f"    input_under_test = {input_text!r}")
+            lines.append(f"    expected_description = {expected_text!r}")
+            if kind == "boolean":
+                lines.append(f"    expected = {expected_value!r}")
+                lines.append('    assert actual is expected, f"Input: {input_under_test} | Expected: {expected!r} ({expected_description}) | Actual: {actual!r}"')
+            elif kind == "literal":
+                lines.append(f"    expected = {expected_value!r}")
+                lines.append('    assert actual == expected, f"Input: {input_under_test} | Expected: {expected!r} ({expected_description}) | Actual: {actual!r}"')
+            elif kind == "less_than_first_input":
+                first_value = next(iter(values.values()), None)
+                if not isinstance(first_value, (int, float)):
+                    lines = lines[:-5]
+                    continue
+                lines.append(f"    original_value = {first_value!r}")
+                lines.append('    assert actual < original_value, f"Input: {input_under_test} | Expected: value less than {original_value!r} ({expected_description}) | Actual: {actual!r}"')
+            elif kind == "between_zero_and_first_input":
+                first_value = next(iter(values.values()), None)
+                if not isinstance(first_value, (int, float)):
+                    lines = lines[:-5]
+                    continue
+                lines.append(f"    original_value = {first_value!r}")
+                lines.append('    assert 0 <= actual <= original_value, f"Input: {input_under_test} | Expected: value between 0 and {original_value!r} ({expected_description}) | Actual: {actual!r}"')
+            else:
+                lines = lines[:-5]
+                continue
+            lines.append("")
+            count += 1
+
+    return lines, count
+
+
+def build_unit_tests(source_code: str, file_path: Path, semantic_suites: list[dict[str, Any]] | None = None) -> tuple[str, int]:
     tree = ast.parse(source_code)
     analysis = analyze_python_source(source_code, file_path.name)
     module_name = file_path.stem
@@ -271,7 +434,12 @@ def build_unit_tests(source_code: str, file_path: Path) -> tuple[str, int]:
                 lines.append(f'    cls = getattr(module, "{node.name}")')
                 lines.append("    cls()")
                 lines.append("")
-                count += 1
+            count += 1
+
+    semantic_lines, semantic_count = build_semantic_assertion_tests(semantic_suites or [], analysis)
+    if semantic_lines:
+        lines.extend(semantic_lines)
+        count += semantic_count
 
     if count == 0:
         lines.append("def test_placeholder():")
@@ -339,6 +507,553 @@ def build_edge_tests(source_code: str, file_path: Path) -> tuple[str, int]:
     return f"{header}\n\n{body}", count
 
 
+def display_value(value: Any) -> str:
+    if isinstance(value, str):
+        return repr(value)
+    if value is None:
+        return "None"
+    return str(value)
+
+
+def format_case_input(parameters: list[dict[str, str]], values: dict[str, Any]) -> str:
+    if not parameters:
+        return "No input"
+
+    rendered: list[str] = []
+    for parameter in parameters:
+        name = parameter["name"]
+        rendered.append(f"{name} = {display_value(values.get(name, sample_value_for_parameter(parameter)))}")
+    return "\n".join(rendered)
+
+
+def sample_value_for_parameter(parameter: dict[str, str]) -> Any:
+    name = parameter["name"].lower()
+    annotation = parameter.get("type", "Any").lower()
+
+    if "bool" in annotation or name.startswith(("is_", "has_", "can_")):
+        return True
+    if any(token in annotation for token in ("int", "float", "number")) or name in {
+        "n",
+        "num",
+        "number",
+        "count",
+        "amount",
+        "total",
+        "value",
+    }:
+        return 1
+    if "list" in annotation or "tuple" in annotation or name.endswith("s"):
+        return []
+    if "dict" in annotation or "map" in annotation:
+        return {}
+    return "sample"
+
+
+def semantic_case(case_id: str, title: str, category: str, input_text: str, expected: str) -> dict[str, str]:
+    return {
+        "id": case_id,
+        "title": title,
+        "category": category,
+        "input": input_text,
+        "expected": expected,
+    }
+
+
+def first_business_parameter(parameters: list[dict[str, str]]) -> str:
+    if not parameters:
+        return "value"
+    return parameters[0]["name"]
+
+
+def split_identifier(value: str) -> list[str]:
+    normalized = value.replace("_", " ")
+    words: list[str] = []
+    for part in normalized.split():
+        current = ""
+        for character in part:
+            if current and character.isupper() and not current[-1].isupper():
+                words.append(current.lower())
+                current = character
+            else:
+                current += character
+        if current:
+            words.append(current.lower())
+    return words
+
+
+def semantic_issue(message: str, confidence: str = "High") -> dict[str, str]:
+    return {
+        "message": message,
+        "confidence": confidence,
+    }
+
+
+def append_issue_to_expected(expected: str, issues: list[dict[str, str]]) -> str:
+    if not issues:
+        return expected
+    issue_lines = [
+        "",
+        "Potential Logic Issue:",
+        issues[0]["message"],
+        "",
+        f"Confidence: {issues[0]['confidence']}",
+    ]
+    return expected + "\n" + "\n".join(issue_lines)
+
+
+def returned_expression(node: ast.FunctionDef) -> ast.AST | None:
+    for statement in node.body:
+        if isinstance(statement, ast.Return):
+            return statement.value
+    return None
+
+
+def modulo_return_details(node: ast.FunctionDef) -> dict[str, Any] | None:
+    value = returned_expression(node)
+    if not isinstance(value, ast.Compare):
+        return None
+    if len(value.ops) != 1 or len(value.comparators) != 1:
+        return None
+
+    left = value.left
+    comparator = value.comparators[0]
+    operator = value.ops[0]
+
+    if not isinstance(left, ast.BinOp) or not isinstance(left.op, ast.Mod):
+        return None
+    if not isinstance(left.left, ast.Name):
+        return None
+    if not isinstance(left.right, ast.Constant) or not isinstance(left.right.value, int):
+        return None
+    if not isinstance(comparator, ast.Constant) or not isinstance(comparator.value, int):
+        return None
+    if not isinstance(operator, (ast.Eq, ast.NotEq)):
+        return None
+
+    return {
+        "parameter": left.left.id,
+        "divisor": left.right.value,
+        "remainder": comparator.value,
+        "operator": operator,
+    }
+
+
+def implementation_matches_even_intent(details: dict[str, Any]) -> bool:
+    if details["divisor"] != 2:
+        return True
+    if isinstance(details["operator"], ast.Eq):
+        return details["remainder"] == 0
+    if isinstance(details["operator"], ast.NotEq):
+        return details["remainder"] != 0
+    return True
+
+
+def implementation_matches_odd_intent(details: dict[str, Any]) -> bool:
+    if details["divisor"] != 2:
+        return True
+    if isinstance(details["operator"], ast.Eq):
+        return details["remainder"] == 1
+    if isinstance(details["operator"], ast.NotEq):
+        return details["remainder"] != 1
+    return True
+
+
+def infer_even_odd_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    is_even_intent = "even" in words
+    is_odd_intent = "odd" in words
+
+    if not is_even_intent and not is_odd_intent:
+        return None
+
+    parameters = function["parameters"]
+    parameter_name = first_business_parameter(parameters)
+    details = modulo_return_details(node)
+    issues: list[dict[str, str]] = []
+
+    if details and details["divisor"] == 2:
+        matches_intent = implementation_matches_even_intent(details) if is_even_intent else implementation_matches_odd_intent(details)
+        if not matches_intent:
+            expected_kind = "even" if is_even_intent else "odd"
+            actual_kind = "odd" if is_even_intent else "even"
+            issues.append(
+                semantic_issue(
+                    f"Function name suggests checking {expected_kind} numbers but implementation appears to return True for {actual_kind} numbers."
+                )
+            )
+
+    true_value = 2 if is_even_intent else 3
+    false_value = 3 if is_even_intent else 2
+    negative_value = -2 if is_even_intent else -3
+    subject = "even" if is_even_intent else "odd"
+    opposite = "odd" if is_even_intent else "even"
+    true_expected = append_issue_to_expected(f"True because {true_value} is {subject}.", issues)
+
+    return {
+        "unitTests": [
+            semantic_case(
+                "unit-1",
+                f"{subject.title()} Number",
+                "unit",
+                format_case_input(parameters, {parameter_name: true_value}),
+                true_expected,
+            ),
+            semantic_case(
+                "unit-2",
+                f"{opposite.title()} Number",
+                "unit",
+                format_case_input(parameters, {parameter_name: false_value}),
+                f"False because {false_value} is {opposite}, not {subject}.",
+            ),
+        ],
+        "negativeTests": [
+            semantic_case(
+                "negative-1",
+                "Missing Required Input",
+                "negative",
+                "No arguments provided",
+                "TypeError is raised because a required argument is missing.",
+            )
+        ],
+        "edgeCases": [
+            semantic_case(
+                "edge-1",
+                "Zero",
+                "edge",
+                format_case_input(parameters, {parameter_name: 0}),
+                "True because 0 is even." if is_even_intent else "False because 0 is even, not odd.",
+            ),
+            semantic_case(
+                "edge-2",
+                f"Negative {subject.title()} Number",
+                "edge",
+                format_case_input(parameters, {parameter_name: negative_value}),
+                f"True because {negative_value} is {subject}.",
+            ),
+        ],
+        "boundaryCases": [
+            semantic_case(
+                "boundary-1",
+                "Adjacent Parity Boundary",
+                "boundary",
+                format_case_input(parameters, {parameter_name: false_value}),
+                f"False because adjacent integer {false_value} changes parity from the valid {subject} case.",
+            )
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def expression_increases_named_value(expression: ast.AST | None, parameter_name: str) -> bool:
+    if isinstance(expression, ast.BinOp):
+        left_is_param = isinstance(expression.left, ast.Name) and expression.left.id == parameter_name
+        right_is_param = isinstance(expression.right, ast.Name) and expression.right.id == parameter_name
+        if isinstance(expression.op, ast.Mult):
+            if left_is_param and isinstance(expression.right, ast.Constant) and isinstance(expression.right.value, (int, float)):
+                return expression.right.value > 1
+            if right_is_param and isinstance(expression.left, ast.Constant) and isinstance(expression.left.value, (int, float)):
+                return expression.left.value > 1
+        if isinstance(expression.op, ast.Add) and (left_is_param or right_is_param):
+            return True
+    return False
+
+
+def infer_discount_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if "discount" not in words:
+        return None
+
+    parameters = function["parameters"]
+    parameter_name = next((parameter["name"] for parameter in parameters if parameter["name"].lower() in {"price", "amount", "total"}), first_business_parameter(parameters))
+    issues: list[dict[str, str]] = []
+
+    if expression_increases_named_value(returned_expression(node), parameter_name):
+        issues.append(
+            semantic_issue(
+                "Function name implies reducing value but implementation appears to increase it."
+            )
+        )
+
+    expected = append_issue_to_expected("Discounted amount is less than the original price and never negative.", issues)
+
+    return {
+        "unitTests": [
+            semantic_case(
+                "unit-1",
+                "Standard Discount",
+                "unit",
+                format_case_input(parameters, {parameter_name: 100}),
+                expected,
+            )
+        ],
+        "negativeTests": [
+            semantic_case(
+                "negative-1",
+                "Negative Price",
+                "negative",
+                format_case_input(parameters, {parameter_name: -1}),
+                "Input is rejected or handled safely because a price cannot be negative.",
+            )
+        ],
+        "edgeCases": [
+            semantic_case(
+                "edge-1",
+                "Zero Price",
+                "edge",
+                format_case_input(parameters, {parameter_name: 0}),
+                "Discounted amount remains 0 and does not become negative.",
+            )
+        ],
+        "boundaryCases": [
+            semantic_case(
+                "boundary-1",
+                "Minimum Positive Price",
+                "boundary",
+                format_case_input(parameters, {parameter_name: 1}),
+                "Discounted amount is between 0 and the original price.",
+            )
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def modulo_expected(value: int, divisor: int, remainder: int, operator: ast.cmpop) -> bool:
+    matches = value % divisor == remainder
+    if isinstance(operator, ast.NotEq):
+        return not matches
+    return matches
+
+
+def infer_modulo_boolean_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, list[dict[str, str]]] | None:
+    for statement in node.body:
+        if not isinstance(statement, ast.Return) or not isinstance(statement.value, ast.Compare):
+            continue
+
+        comparison = statement.value
+        if len(comparison.ops) != 1 or len(comparison.comparators) != 1:
+            continue
+
+        left = comparison.left
+        comparator = comparison.comparators[0]
+        operator = comparison.ops[0]
+
+        if not isinstance(left, ast.BinOp) or not isinstance(left.op, ast.Mod):
+            continue
+        if not isinstance(left.left, ast.Name):
+            continue
+        if not isinstance(left.right, ast.Constant) or not isinstance(left.right.value, int):
+            continue
+        if not isinstance(comparator, ast.Constant) or not isinstance(comparator.value, int):
+            continue
+        if not isinstance(operator, (ast.Eq, ast.NotEq)):
+            continue
+
+        parameter_name = left.left.id
+        divisor = left.right.value
+        remainder = comparator.value
+        parameters = function["parameters"]
+
+        if divisor == 0 or parameter_name not in {parameter["name"] for parameter in parameters}:
+            continue
+
+        true_value = divisor if remainder == 0 else remainder
+        false_value = true_value + 1
+        zero_expected = modulo_expected(0, divisor, remainder, operator)
+        negative_value = -divisor if remainder == 0 else -remainder
+        negative_expected = modulo_expected(negative_value, divisor, remainder, operator)
+
+        even_like = divisor == 2 and remainder == 0
+        true_title = "Even Number" if even_like else "Matching Remainder"
+        false_title = "Odd Number" if even_like else "Different Remainder"
+        negative_title = "Negative Even Number" if even_like else "Negative Matching Remainder"
+
+        return {
+            "unitTests": [
+                semantic_case(
+                    "unit-1",
+                    true_title,
+                    "unit",
+                    format_case_input(parameters, {parameter_name: true_value}),
+                    str(modulo_expected(true_value, divisor, remainder, operator)),
+                ),
+                semantic_case(
+                    "unit-2",
+                    false_title,
+                    "unit",
+                    format_case_input(parameters, {parameter_name: false_value}),
+                    str(modulo_expected(false_value, divisor, remainder, operator)),
+                ),
+            ],
+            "negativeTests": [
+                semantic_case(
+                    "negative-1",
+                    "Missing Required Input",
+                    "negative",
+                    "No arguments provided",
+                    "TypeError is raised because a required argument is missing.",
+                )
+            ],
+            "edgeCases": [
+                semantic_case(
+                    "edge-1",
+                    "Zero",
+                    "edge",
+                    format_case_input(parameters, {parameter_name: 0}),
+                    str(zero_expected),
+                ),
+                semantic_case(
+                    "edge-2",
+                    negative_title,
+                    "edge",
+                    format_case_input(parameters, {parameter_name: negative_value}),
+                    str(negative_expected),
+                ),
+            ],
+            "boundaryCases": [
+                semantic_case(
+                    "boundary-1",
+                    "Boundary Near Remainder Change",
+                    "boundary",
+                    format_case_input(parameters, {parameter_name: false_value}),
+                    str(modulo_expected(false_value, divisor, remainder, operator)),
+                )
+            ],
+            "potentialLogicIssues": [],
+        }
+
+    return None
+
+
+def build_generic_semantic_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, list[dict[str, str]]]:
+    parameters = function["parameters"]
+    sample_values = {parameter["name"]: sample_value_for_parameter(parameter) for parameter in parameters}
+    required = required_arg_count(node.args, is_method=bool(function.get("className")))
+    subject = function["name"]
+
+    unit_tests = [
+        semantic_case(
+            "unit-1",
+            "Primary Valid Input",
+            "unit",
+            format_case_input(parameters, sample_values),
+            f"{subject} returns the documented result without raising an error.",
+        )
+    ]
+
+    negative_tests = [
+        semantic_case(
+            "negative-1",
+            "Missing Required Input",
+            "negative",
+            "No arguments provided" if required else "Unexpected extra argument",
+            "TypeError is raised for an invalid call signature.",
+        )
+    ]
+
+    edge_values = dict(sample_values)
+    for parameter in parameters:
+        name = parameter["name"]
+        current = edge_values.get(name)
+        if isinstance(current, (int, float, bool)):
+            edge_values[name] = 0
+        elif isinstance(current, str):
+            edge_values[name] = ""
+
+    edge_cases = [
+        semantic_case(
+            "edge-1",
+            "Empty Or Zero Value",
+            "edge",
+            format_case_input(parameters, edge_values),
+            f"{subject} handles empty or zero-like input predictably.",
+        )
+    ]
+
+    boundary_values = dict(sample_values)
+    for parameter in parameters:
+        name = parameter["name"]
+        current = boundary_values.get(name)
+        if isinstance(current, (int, float, bool)):
+            boundary_values[name] = 1
+        elif isinstance(current, str):
+            boundary_values[name] = "x"
+
+    boundary_cases = [
+        semantic_case(
+            "boundary-1",
+            "Minimal Valid Boundary",
+            "boundary",
+            format_case_input(parameters, boundary_values),
+            f"{subject} accepts the smallest representative valid input.",
+        )
+    ]
+
+    return {
+        "unitTests": unit_tests,
+        "negativeTests": negative_tests,
+        "edgeCases": edge_cases,
+        "boundaryCases": boundary_cases,
+    }
+
+
+def build_semantic_test_suites(source_code: str, file_path: Path) -> list[dict[str, Any]]:
+    tree = ast.parse(source_code)
+    analysis = analyze_python_source(source_code, file_path.name)
+    function_lookup = {
+        (function.get("className"), function["name"]): function
+        for function in analysis["functions"]
+    }
+    suites: list[dict[str, Any]] = []
+
+    def append_suite(node: ast.FunctionDef, class_name: str | None = None) -> None:
+        function = function_lookup.get((class_name, node.name))
+        if not function:
+            return
+
+        cases = (
+            infer_even_odd_intent_cases(node, function)
+            or infer_discount_intent_cases(node, function)
+            or infer_modulo_boolean_cases(node, function)
+            or build_generic_semantic_cases(node, function)
+        )
+        suite_index = len(suites) + 1
+        suites.append(
+            {
+                "id": f"semantic-{suite_index}",
+                "functionName": function["name"],
+                "fileName": file_path.name,
+                **({"className": class_name} if class_name else {}),
+                "potentialLogicIssues": cases.get("potentialLogicIssues", []),
+                "unitTests": [
+                    {**item, "id": f"TC-{suite_index}-UNIT-{index + 1:03d}"}
+                    for index, item in enumerate(cases["unitTests"])
+                ],
+                "negativeTests": [
+                    {**item, "id": f"TC-{suite_index}-NEG-{index + 1:03d}"}
+                    for index, item in enumerate(cases["negativeTests"])
+                ],
+                "edgeCases": [
+                    {**item, "id": f"TC-{suite_index}-EDGE-{index + 1:03d}"}
+                    for index, item in enumerate(cases["edgeCases"])
+                ],
+                "boundaryCases": [
+                    {**item, "id": f"TC-{suite_index}-BOUND-{index + 1:03d}"}
+                    for index, item in enumerate(cases["boundaryCases"])
+                ],
+            }
+        )
+
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            append_suite(node)
+        elif isinstance(node, ast.ClassDef):
+            for child in node.body:
+                if isinstance(child, ast.FunctionDef):
+                    append_suite(child, node.name)
+
+    return suites
+
+
 def write_manifest(
     source_path: Path,
     generated_dir: Path,
@@ -347,6 +1062,7 @@ def write_manifest(
     combined_file_path: Path,
     analysis: dict[str, Any],
     summary: dict[str, int],
+    semantic_suites: list[dict[str, Any]],
 ) -> None:
     manifest = {
         "sourceFileName": source_path.name,
@@ -356,6 +1072,7 @@ def write_manifest(
         "edgeTestFilePath": str(edge_file_path.resolve()),
         "combinedTestFilePath": str(combined_file_path.resolve()),
         "analysis": analysis,
+        "semanticSuites": semantic_suites,
         "summary": summary,
     }
     (generated_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
@@ -364,7 +1081,8 @@ def write_manifest(
 def generate_tests_for_file(file_path: Path, generated_dir: Path) -> dict[str, Any]:
     source_code = file_path.read_text(encoding="utf-8")
     analysis = analyze_python_source(source_code, file_path.name)
-    unit_code, unit_count = build_unit_tests(source_code, file_path)
+    semantic_suites = build_semantic_test_suites(source_code, file_path)
+    unit_code, unit_count = build_unit_tests(source_code, file_path, semantic_suites)
     edge_code, edge_count = build_edge_tests(source_code, file_path)
 
     generated_dir.mkdir(parents=True, exist_ok=True)
@@ -390,11 +1108,13 @@ def generate_tests_for_file(file_path: Path, generated_dir: Path) -> dict[str, A
         combined_file_path,
         analysis,
         summary,
+        semantic_suites,
     )
 
     return {
         "repository": analysis["repository"],
         "generatedAt": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+        "semanticSuites": semantic_suites,
         "unitTests": [
             {
                 "id": f"{file_path.stem}-unit",

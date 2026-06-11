@@ -1,0 +1,30 @@
+User Story: Inventory Updates
+
+As a online shopper, I want to use the inventory updates capability so that I can complete the purchase lifecycle reliably.
+
+Acceptance Criteria:
+1. The workflow must accept a valid request when all mandatory fields, eligibility rules, and permissions are satisfied.
+2. Cart or order amount must be greater than 0.
+3. Coupon or promotion cannot reduce payable total below 0.
+4. Inventory must be reserved before payment capture and released on failure.
+5. Cancellation, return, or refund requests must be within 7 days where applicable.
+6. Customer must receive status, refund, or fulfillment notification.
+7. Duplicate submissions within 2 minutes must be rejected unless the previous attempt failed before state change.
+
+Business Rules:
+- All monetary values must be rounded to 2 decimal places.
+- Audit trail must capture actor, timestamp, decision, and reference id.
+- Validation failures must not change committed balances, inventory, appointments, records, sessions, or entitlements.
+- Notifications must be sent only after durable state change.
+
+Validation Rules:
+- Required identifiers cannot be blank and must contain at least 4 characters.
+- Numeric limits must reject negative values, zero where a positive amount is required, and values above configured maximums.
+- Security-sensitive actions require current authentication and cannot trust client-side role claims.
+
+Edge Cases And Boundaries:
+- Exactly at the configured maximum limit.
+- One unit above and one unit below the configured maximum limit.
+- OTP exactly at 5 minutes, one second before expiry, and one second after expiry.
+- Duplicate request exactly at the 2 minute boundary.
+- Missing optional fields should not block submission when mandatory rules are satisfied.

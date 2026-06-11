@@ -3,6 +3,7 @@
 import { PageHeader } from "@/components/page-primitives"
 import { CoveragePanel } from "@/components/testgenai/coverage-panel"
 import { DemoBadge } from "@/components/testgenai/demo-badge"
+import { DownloadReportButton } from "@/components/testgenai/download-report-button"
 import { InputModeSelector } from "@/components/testgenai/input-mode-selector"
 import { ResultsDashboard } from "@/components/testgenai/results-dashboard"
 import { useTestGenAI } from "@/components/testgenai-provider"
@@ -19,7 +20,12 @@ export function ResultsView() {
             ? "Inspect runtime outcomes, coverage, and remaining blind spots"
             : "Track how generated story cases translate into validation coverage"
         }
-        actions={<DemoBadge />}
+        actions={
+          <>
+            <DemoBadge />
+            <DownloadReportButton />
+          </>
+        }
       />
 
       <InputModeSelector />

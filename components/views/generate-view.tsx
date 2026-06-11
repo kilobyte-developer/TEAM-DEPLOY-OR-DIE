@@ -3,6 +3,7 @@
 import { PageHeader, Panel } from "@/components/page-primitives"
 import { AnalysisPanel } from "@/components/testgenai/analysis-panel"
 import { DemoBadge } from "@/components/testgenai/demo-badge"
+import { DownloadReportButton } from "@/components/testgenai/download-report-button"
 import { InputModeSelector } from "@/components/testgenai/input-mode-selector"
 import { TestViewer } from "@/components/testgenai/test-viewer"
 import { UserStoryTestViewer } from "@/components/testgenai/user-story-test-viewer"
@@ -20,7 +21,12 @@ export function GenerateView() {
             ? "Generate unit and edge-case suites from uploaded source code"
             : "Review generated scenarios, negative flows, and edge cases from the story"
         }
-        actions={<DemoBadge />}
+        actions={
+          <>
+            <DemoBadge />
+            <DownloadReportButton />
+          </>
+        }
       />
 
       <InputModeSelector />

@@ -1,13 +1,15 @@
 import { spawnSync } from 'child_process'
 import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
+import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 
 export const runtime = 'nodejs'
 
 const BACKEND_DIR = join(process.cwd(), 'backend')
 const ENGINE_PATH = join(BACKEND_DIR, 'mvp_engine.py')
-const GENERATED_TESTS_DIR = join(BACKEND_DIR, 'generated_tests')
-const UPLOADS_DIR = join(BACKEND_DIR, 'uploads')
+const GENERATED_TESTS_DIR = '/tmp/testgenai_generated_tests'
+const UPLOADS_DIR = '/tmp/testgenai_uploads'
+const PYTHON_CMD = process.platform === 'win32' ? 'python' : 'python3'
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     const filePath = join(UPLOADS_DIR, fileName)
-    const result = spawnSync('python', [ENGINE_PATH, 'generate-tests', filePath, GENERATED_TESTS_DIR], {
+    const result = spawnSync(PYTHON_CMD, [ENGINE_PATH, 'generate-tests', filePath, GENERATED_TESTS_DIR], {
       cwd: BACKEND_DIR,
       encoding: 'utf-8',
     })
@@ -30,7 +32,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: errorMessage }, { status })
     }
 
-    return NextResponse.json(JSON.parse(result.stdout))
+    const payload = JSON.parse(result.stdout)
+    await testgenaiDatabase.recordGeneratedTests(fileName, payload)
+
+    return NextResponse.json(payload)
   } catch {
     return NextResponse.json({ error: 'Test generation failed' }, { status: 500 })
   }

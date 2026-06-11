@@ -11,7 +11,9 @@ import {
   BarChart3,
   Gauge,
   FlaskConical,
+  History,
   Menu,
+  PieChart,
   X,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -25,6 +27,8 @@ const NAV_ITEMS = [
   { href: "/execution", label: "Execution", icon: PlayCircle, code: "04" },
   { href: "/results", label: "Coverage", icon: BarChart3, code: "05" },
   { href: "/metrics", label: "Evaluation", icon: Gauge, code: "06" },
+  { href: "/history", label: "Past Records", icon: History, code: "07" },
+  { href: "/dashboard", label: "Dashboard", icon: PieChart, code: "08" },
 ]
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
