@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'fs/promises'
 import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
+import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 
 export const runtime = 'nodejs'
 
@@ -31,6 +32,17 @@ export async function POST(request: NextRequest) {
     await mkdir(UPLOADS_DIR, { recursive: true })
     const filePath = join(UPLOADS_DIR, file.name)
     await writeFile(filePath, Buffer.from(buffer))
+    const uploadedAt = new Date().toISOString()
+
+    await testgenaiDatabase.recordUpload({
+      fileName: file.name,
+      filePath,
+      language: 'Python',
+      fileSize,
+      repositoryName: 'local-workspace',
+      sourceType: 'local',
+      uploadedAt,
+    })
 
     return NextResponse.json({
       id: file.name,
@@ -39,7 +51,7 @@ export async function POST(request: NextRequest) {
       sizeBytes: fileSize,
       sizeLabel: formatBytes(fileSize),
       status: 'Uploaded',
-      uploadedAt: new Date().toISOString(),
+      uploadedAt,
       repository: 'local-workspace',
       source: 'local',
     })

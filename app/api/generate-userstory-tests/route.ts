@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 
 export const runtime = 'nodejs'
 
@@ -633,8 +634,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'user_story cannot be empty.' }, { status: 400 })
     }
 
-    return NextResponse.json(await generateWithProviders(trimmedStory))
+    const suite = await generateWithProviders(trimmedStory)
+    await testgenaiDatabase.recordUserStorySuite(suite)
+
+    return NextResponse.json(suite)
   } catch {
-    return NextResponse.json(localGenerateUserStoryTests('The submitted user story could not be parsed exactly, but local fallback generated a safe suite.'))
+    const suite = localGenerateUserStoryTests('The submitted user story could not be parsed exactly, but local fallback generated a safe suite.')
+    await testgenaiDatabase.recordUserStorySuite(suite)
+    return NextResponse.json(suite)
   }
 }
