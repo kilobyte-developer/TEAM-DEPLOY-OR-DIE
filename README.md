@@ -1,6 +1,6 @@
-# TESTGENAI
+# TESTGEN-AI
 
-TESTGENAI is an automated test case generation and validation platform built for the Capgemini AgentifAI Buildathon 2026 by Team Deploy or Die. It accepts Python source files or user stories, generates human-readable and executable tests, runs pytest, calculates coverage, and exports professional HTML reports.
+TESTGEN-AI is an automated test case generation and validation platform built for the Capgemini AgentifAI Buildathon 2026 by Team Deploy or Die. It accepts Python source files or user stories, generates human-readable and executable tests, runs pytest, calculates coverage, and exports professional HTML reports.
 
 ## Features
 
