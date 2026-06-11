@@ -1,114 +1,29 @@
-# TESTGEN-AI
+# TestGenAI
 
-TESTGEN-AI is an automated test case generation and validation platform built for the Capgemini AgentifAI Buildathon 2026 by Team Deploy or Die. It accepts Python source files or user stories, generates human-readable and executable tests, runs pytest, calculates coverage, and exports professional HTML reports.
-
-## Features
-
-- Python `.py` file upload
-- AST-based source code analysis
-- Human-readable semantic test generation
-- Intent-based expected output generation
-- Logic issue detection for suspicious implementations
-- Executable pytest artifact generation
-- Semantic behavior assertions inside generated pytest files
-- Real pytest execution with pass/fail logs
-- Coverage reporting through pytest-cov
-- User story test generation
-- OpenAI user-story generation with Gemini fallback
-- Local deterministic fallback generator
-- Source-code and user-story HTML report downloads
-- Dashboard, generation, execution, coverage, and evaluation views
-
-## Architecture
-
-### Frontend
-
-- Next.js App Router and React
-- Central app state in `components/testgenai-provider.tsx`
-- API client helpers in `lib/services/testgenai.ts`
-- Dashboard and workflow views in `components/views/`
-- Test, execution, coverage, and report UI in `components/testgenai/`
-
-### Backend
-
-- Python AST and test-generation engine in `backend/mvp_engine.py`
-- FastAPI service in `backend/main.py` for coverage and backend health
-- Next.js API routes in `app/api/` for upload, analysis, generation, execution, results, downloads, and user-story generation
-
-### AI
-
-- OpenAI `gpt-4.1-mini` is used for user-story test generation when `OPENAI_API_KEY` is configured.
-- Gemini `gemini-2.5-flash-lite` is attempted as fallback when `GEMINI_API_KEY` is configured.
-- A local deterministic fallback always returns user-story tests if LLM providers are unavailable.
-- Source-code intent analysis is deterministic and AST-based in the current implementation.
-
-### Execution
-
-- Generated pytest files are written to `/tmp/testgenai_generated_tests`.
-- Test execution reads the generated manifest and runs pytest against the generated unit and edge test files.
-- Execution results are stored in `/tmp/testgenai_reports/results.json`.
-
-### Coverage
-
-- FastAPI `/coverage` runs pytest-cov against the latest generated manifest.
-- Coverage output is stored in `/tmp/testgenai_reports/coverage.json`.
-
-### Reporting
-
-- HTML reports are generated client-side in `lib/report/html-report.ts`.
-- Reports can be downloaded from Generator, Execution, and Coverage pages.
+Automated test case generation and validation for Python source code. Upload a `.py` file or paste a user story, generate unit and edge-case tests, execute them with pytest, and view coverage metrics — all from a single interface.
 
 ## Tech Stack
 
-### Frontend
+- **Frontend**: Next.js, React, TypeScript, Tailwind CSS
+- **Backend**: FastAPI, Python
+- **Test Engine**: pytest, pytest-cov
+- **LLM**: OpenAI `gpt-4.1-mini` (primary) · Gemini `gemini-2.5-flash-lite` (fallback) · local deterministic fallback
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- Lucide React
+## Prerequisites
 
-### Backend
+- Node.js 18+ and pnpm
+- Python 3.11 recommended (3.9+ minimum)
+- Optional: OpenAI API key or Gemini API key (user story mode works without either via local fallback)
 
-- Python
-- FastAPI
-- Uvicorn
-- Python `ast`
+## Setup
 
-### AI
-
-- OpenAI chat completions API
-- Gemini generateContent API
-- Local deterministic fallback logic
-
-### Testing
-
-- pytest
-- pytest-cov
-
-### Reporting
-
-- Client-side HTML generation
-- Browser Blob download
-
-## Installation
-
-### Prerequisites
-
-- Node.js 18 or newer
-- pnpm
-- Python 3.11 recommended
-- Optional OpenAI API key
-- Optional Gemini API key
-
-### Install Frontend Dependencies
+### 1. Install frontend dependencies
 
 ```bash
 pnpm install
 ```
 
-### Install Backend Dependencies
+### 2. Install backend dependencies
 
 ```bash
 cd backend
@@ -116,9 +31,9 @@ pip install -r requirements.txt
 cd ..
 ```
 
-### Environment Variables
+### 3. Environment variables
 
-Create or update `.env` in the project root:
+Create `.env.local` in the project root:
 
 ```env
 NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
@@ -127,79 +42,77 @@ GEMINI_API_KEY=
 LLM_PROVIDER_PRIORITY=openai
 ```
 
-API keys are optional for user-story mode because the local fallback generator still works.
+API keys are optional. The local fallback handles user story generation if neither is configured.
 
-## Startup
+## Running
 
-### Start Next.js
+Two services must run in parallel.
+
+**Terminal 1 — Next.js (port 3000)**
 
 ```bash
 pnpm dev
 ```
 
-Open:
+Open `http://localhost:3000`.
 
-```text
-http://localhost:3000
-```
-
-### Start FastAPI Coverage Service
+**Terminal 2 — FastAPI (port 8000)**
 
 ```bash
 cd backend
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-FastAPI is required for coverage. Source upload, source analysis, test generation, and execution are handled through Next.js API routes.
+FastAPI is required for test execution and coverage. Source upload, analysis, generation, and user story routes are handled by Next.js API routes.
 
-## Usage
+## Workflow
 
 ### Source Code Mode
 
-1. Open Input Workspace.
-2. Upload a Python `.py` file.
-3. Run analysis.
-4. Open Generator and generate tests.
-5. Review human-readable semantic cases and generated pytest code.
-6. Open Execution and run tests.
-7. Open Coverage and refresh coverage.
-8. Download the HTML report.
+1. **Input Workspace** → Upload a Python `.py` file
+2. **Input Workspace** → Click "Analyze Workspace" (AST parsing)
+3. **Generator** → Click "Generate Source Code Tests"
+4. **Execution** → Click "Run Tests" (FastAPI must be running)
+5. **Coverage** → View coverage metrics
+6. Download the HTML report from Generator, Execution, or Coverage pages
 
 ### User Story Mode
 
-1. Switch to User Story mode.
-2. Paste a user story with acceptance criteria.
-3. Generate test cases.
-4. Review positive, negative, and edge cases.
-5. Download the HTML report.
+1. Switch to **User Story** mode in Input Workspace
+2. Paste a user story with acceptance criteria
+3. Click "Generate Tests" — produces positive, negative, and edge cases
+4. Download the HTML report
 
-## Screens / Modules
+## API Reference
 
-- Overview: dashboard statistics, workflow, activity, quick actions
-- Input Workspace: source upload or user-story input
-- Generator: analysis summary, semantic cases, generated artifacts, story cases
-- Execution: pytest run controls and execution logs
-- Coverage: coverage metrics and missing-function summary
-- Evaluation: generated suite quality summary
-- User Story Mode: scenario-driven QA suite generation
+### Next.js Routes (port 3000)
 
-## Team
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/upload` | Upload Python file |
+| POST | `/api/analyze` | Analyze code structure via AST |
+| POST | `/api/generate-tests` | Generate unit and edge-case tests |
+| POST | `/api/generate-userstory-tests` | Generate tests from user story |
+| GET | `/api/results` | Retrieve last execution results |
 
-Team Name: Deploy or Die
+### FastAPI Routes (port 8000)
 
-- Atharva: Project lead, architecture, backend integration, AI testing logic, execution pipeline, prompt engineering, system design, documentation oversight
-- Yogesh: Frontend development, UI components, frontend state management, frontend integration, dashboard views, user experience
-- Nikhil: Datasets, testing data, validation assets, supporting QA material
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/run-tests` | Execute pytest on generated tests |
+| GET | `/coverage` | Calculate coverage via pytest-cov |
+| GET | `/health` | Health check |
 
-## Future Scope
+## Troubleshooting
 
-- Persist historical report snapshots
-- Add richer class-method semantic execution support
-- Add more source-code intent detectors
-- Add multi-file project support
-- Add PDF export through print-ready reports
-- Add authentication and team workspaces
+**"Execution failed. NetworkError when attempting to fetch resource"**
+FastAPI backend is not running. Start it in Terminal 2.
 
-## License
+**"python: command not found"**
+Use `python3` on Linux/macOS.
 
-Hackathon project for Capgemini AgentifAI Buildathon 2026. Add a formal open-source license before public production use.
+**Tests won't generate**
+Run analysis first and confirm results appear before generating.
