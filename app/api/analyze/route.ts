@@ -1,6 +1,7 @@
 import { spawnSync } from 'child_process'
 import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
+import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 
 export const runtime = 'nodejs'
 
@@ -30,7 +31,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: errorMessage }, { status })
     }
 
-    return NextResponse.json(JSON.parse(result.stdout))
+    const payload = JSON.parse(result.stdout)
+    await testgenaiDatabase.recordAnalysis(fileName, payload)
+
+    return NextResponse.json(payload)
   } catch {
     return NextResponse.json({ error: 'Analysis failed' }, { status: 500 })
   }

@@ -2,6 +2,8 @@ import { mkdir, readFile, writeFile } from 'fs/promises'
 import { spawnSync } from 'child_process'
 import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
+import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
+import type { ExecutionResult } from '@/lib/testgenai-types'
 
 export const runtime = 'nodejs'
 
@@ -13,11 +15,12 @@ const RESULTS_PATH = join(REPORTS_DIR, 'results.json')
 const PYTHON_CMD = process.platform === 'win32' ? 'python' : 'python3'
 
 type Manifest = {
+  sourceFileName: string
   unitTestFilePath: string
   edgeTestFilePath: string
 }
 
-function classifyLogLevel(message: string) {
+function classifyLogLevel(message: string): 'info' | 'pass' | 'fail' | 'warn' {
   if (message.includes('FAILED') || message.includes('ERROR')) return 'fail'
   if (message.includes('PASSED')) return 'pass'
   if (message.includes('WARNING') || message.includes('WARN')) return 'warn'
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
     const failed = parseSummaryCount(/(\d+)\s+failed/, output)
     const total = collected || passed + failed
     const statusCode = result.status ?? 1
-    const payload = {
+    const payload: ExecutionResult = {
       mode: 'source-code',
       status: statusCode === 0 || statusCode === 1 ? 'completed' : 'failed',
       generatedAt: new Date().toISOString(),
@@ -100,6 +103,7 @@ export async function POST(request: NextRequest) {
 
     await mkdir(REPORTS_DIR, { recursive: true })
     await writeFile(RESULTS_PATH, JSON.stringify(payload, null, 2), 'utf-8')
+    await testgenaiDatabase.recordExecution(manifest.sourceFileName, payload)
 
     return NextResponse.json(payload)
   } catch (error) {
