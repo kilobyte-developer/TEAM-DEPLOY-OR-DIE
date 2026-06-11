@@ -1,0 +1,93 @@
+{
+  "sourceFileName": "interest_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\interest_faulty.py",
+  "moduleName": "interest_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_interest_faulty\\test_interest_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_interest_faulty\\test_interest_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_interest_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:14.337953Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "calculate_interest",
+        "fileName": "interest_faulty.py",
+        "parameters": [
+          {
+            "name": "p",
+            "type": "Any"
+          },
+          {
+            "name": "r",
+            "type": "Any"
+          },
+          {
+            "name": "t",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function calculate_interest extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "calculate_interest",
+      "fileName": "interest_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function calculate_interest returns principal without applying rate and time.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Simple Interest",
+          "category": "unit",
+          "input": "p = 1000\nr = 5\nt = 2",
+          "expected": "100.0\n\nPotential Logic Issue:\nFunction calculate_interest returns principal without applying rate and time.\n\nConfidence: High"
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Zero Rate",
+          "category": "negative",
+          "input": "p = 1000\nr = 0\nt = 2",
+          "expected": "0.0"
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Zero Time",
+          "category": "edge",
+          "input": "p = 1000\nr = 5\nt = 0",
+          "expected": "0.0"
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "One Year",
+          "category": "boundary",
+          "input": "p = 1000\nr = 5\nt = 1",
+          "expected": "50.0"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 5,
+    "edgeTestsGenerated": 1
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "sourceFileName": "prime_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\prime_faulty.py",
+  "moduleName": "prime_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_prime_faulty\\test_prime_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_prime_faulty\\test_prime_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_prime_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:17.105469Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "is_prime",
+        "fileName": "prime_faulty.py",
+        "parameters": [
+          {
+            "name": "n",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function is_prime extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "is_prime",
+      "fileName": "prime_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function is_prime appears to return True for every input, which conflicts with expected validation behavior. Composite numbers would be accepted as prime.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Prime Number",
+          "category": "unit",
+          "input": "n = 2",
+          "expected": "True because 2 is prime.\n\nPotential Logic Issue:\nFunction is_prime appears to return True for every input, which conflicts with expected validation behavior. Composite numbers would be accepted as prime.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Composite Number",
+          "category": "unit",
+          "input": "n = 4",
+          "expected": "False because 4 is composite, not prime."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Number Below Prime Range",
+          "category": "negative",
+          "input": "n = 1",
+          "expected": "False because 1 is not prime."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Zero",
+          "category": "edge",
+          "input": "n = 0",
+          "expected": "False because 0 is not prime."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Smallest Prime Boundary",
+          "category": "boundary",
+          "input": "n = 2",
+          "expected": "True because 2 is the smallest prime number."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 5,
+    "edgeTestsGenerated": 1
+  }
+}

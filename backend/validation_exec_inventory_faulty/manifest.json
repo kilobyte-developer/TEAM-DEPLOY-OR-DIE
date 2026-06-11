@@ -1,0 +1,92 @@
+{
+  "sourceFileName": "inventory_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\inventory_faulty.py",
+  "moduleName": "inventory_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_inventory_faulty\\test_inventory_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_inventory_faulty\\test_inventory_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_inventory_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:15.021827Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "in_stock",
+        "fileName": "inventory_faulty.py",
+        "parameters": [
+          {
+            "name": "quantity",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function in_stock extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "in_stock",
+      "fileName": "inventory_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function in_stock appears to mark negative stock as available.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Positive Quantity",
+          "category": "unit",
+          "input": "quantity = 5",
+          "expected": "True because positive quantity is in stock.\n\nPotential Logic Issue:\nFunction in_stock appears to mark negative stock as available.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Zero Quantity",
+          "category": "unit",
+          "input": "quantity = 0",
+          "expected": "False because zero quantity is not in stock."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Negative Quantity",
+          "category": "negative",
+          "input": "quantity = -1",
+          "expected": "False because negative stock cannot be available."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "One Item",
+          "category": "edge",
+          "input": "quantity = 1",
+          "expected": "True because one item is available."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Zero Boundary",
+          "category": "boundary",
+          "input": "quantity = 0",
+          "expected": "False because zero is the out-of-stock boundary."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 5,
+    "edgeTestsGenerated": 1
+  }
+}

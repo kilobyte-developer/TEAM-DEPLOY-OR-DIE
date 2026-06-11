@@ -1,0 +1,96 @@
+{
+  "sourceFileName": "divide_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\divide_faulty.py",
+  "moduleName": "divide_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_divide_faulty\\test_divide_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_divide_faulty\\test_divide_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_divide_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:12.950855Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "divide",
+        "fileName": "divide_faulty.py",
+        "parameters": [
+          {
+            "name": "a",
+            "type": "Any"
+          },
+          {
+            "name": "b",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function divide extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "divide",
+      "fileName": "divide_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function divide appears to ignore inputs and always return 0.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Basic Division",
+          "category": "unit",
+          "input": "a = 10\nb = 2",
+          "expected": "5.0\n\nPotential Logic Issue:\nFunction divide appears to ignore inputs and always return 0.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Non Zero Quotient",
+          "category": "unit",
+          "input": "a = 9\nb = 3",
+          "expected": "3.0"
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Zero Divisor",
+          "category": "negative",
+          "input": "a = 10\nb = 0",
+          "expected": "ZeroDivisionError is raised because division by zero is invalid."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Zero Numerator",
+          "category": "edge",
+          "input": "a = 0\nb = 5",
+          "expected": "0.0"
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Unit Divisor",
+          "category": "boundary",
+          "input": "a = 7\nb = 1",
+          "expected": "7.0"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 6,
+    "edgeTestsGenerated": 1
+  }
+}

@@ -19,7 +19,7 @@ import {
   getPastRecordDetails,
   getPastRecords,
 } from "@/lib/services/testgenai"
-import type { PastRecordDetails, PastRecordSummary } from "@/lib/testgenai-types"
+import type { PastRecordDetails, PastRecordSummary, PotentialLogicIssue } from "@/lib/testgenai-types"
 
 const ease = [0.22, 1, 0.36, 1] as const
 
@@ -51,6 +51,47 @@ function ListBlock({ items, empty = "None" }: { items: unknown[]; empty?: string
         </li>
       ))}
     </ul>
+  )
+}
+
+function LogicIssueHistoryBlock({ issues }: { issues: PotentialLogicIssue[] }) {
+  if (!issues.length) return <p className="text-xs text-muted-foreground">No potential logic issues recorded.</p>
+
+  return (
+    <div className="grid gap-3">
+      {issues.map((issue, index) => {
+        const suggestion = issue.fixSuggestion
+        return (
+          <article key={`${issue.message}-${index}`} className="border border-foreground/20 p-4">
+            <p className="text-xs leading-6 text-foreground">{issue.message}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="border border-foreground/20 px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                Severity: {issue.severity ?? suggestion?.severity ?? "High"}
+              </span>
+              <span className="border border-foreground/20 px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                Confidence: {suggestion?.confidence ?? issue.confidence}
+              </span>
+            </div>
+            <div className="mt-4 border border-foreground/15 p-3">
+              <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground">AI Fix Suggestion</h4>
+              {!suggestion || suggestion.status === "unavailable" ? (
+                <p className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">AI Fix Suggestion Unavailable</p>
+              ) : (
+                <div className="mt-3 grid gap-3 text-xs">
+                  <p>{suggestion.issueSummary}</p>
+                  <div className="grid gap-3 lg:grid-cols-2">
+                    <pre className="overflow-auto bg-foreground p-3 text-background">{suggestion.currentCode || "Not specified"}</pre>
+                    <pre className="overflow-auto bg-foreground p-3 text-background">{suggestion.suggestedCode}</pre>
+                  </div>
+                  <p className="leading-6 text-muted-foreground">{suggestion.explanation}</p>
+                  <p className="leading-6 text-muted-foreground">{suggestion.potentialImpact}</p>
+                </div>
+              )}
+            </div>
+          </article>
+        )
+      })}
+    </div>
   )
 }
 
@@ -371,10 +412,7 @@ export function PastRecordsView() {
                   </DetailSection>
 
                   <DetailSection title="Potential Logic Issues">
-                    <ListBlock
-                      items={details.semanticTests.flatMap((suite) => suite.potentialLogicIssues)}
-                      empty="No potential logic issues recorded."
-                    />
+                    <LogicIssueHistoryBlock issues={details.semanticTests.flatMap((suite) => suite.potentialLogicIssues)} />
                   </DetailSection>
 
                   <DetailSection title="Execution Logs">

@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { RefreshCw, Wand2 } from "lucide-react"
+import { RefreshCw, Wand2, Wrench } from "lucide-react"
 import { CodeViewer } from "@/components/code-viewer"
 import { BrutalButton, Panel } from "@/components/page-primitives"
 import { StateBlock } from "@/components/testgenai/state-block"
 import { useTestGenAI } from "@/components/testgenai-provider"
-import type { SemanticFunctionTestSuite, SemanticTestCase } from "@/lib/testgenai-types"
+import type { PotentialLogicIssue, SemanticFunctionTestSuite, SemanticTestCase } from "@/lib/testgenai-types"
 import { cn } from "@/lib/utils"
 
 export function TestViewer() {
@@ -154,12 +154,89 @@ function HumanReadableTestCases({ suites }: { suites: SemanticFunctionTestSuite[
               {suite.className ? `${suite.className}.${suite.functionName}` : suite.functionName}
             </div>
           </div>
+          <PotentialLogicIssues issues={suite.potentialLogicIssues ?? []} />
           <SemanticCaseSection title="Unit Tests" cases={suite.unitTests} />
           <SemanticCaseSection title="Negative Tests" cases={suite.negativeTests} />
           <SemanticCaseSection title="Edge Cases" cases={suite.edgeCases} />
           <SemanticCaseSection title="Boundary Cases" cases={suite.boundaryCases} />
         </div>
       ))}
+    </div>
+  )
+}
+
+function PotentialLogicIssues({ issues }: { issues: PotentialLogicIssue[] }) {
+  if (issues.length === 0) return null
+
+  return (
+    <div className="border-b border-border">
+      <div className="border-b border-border px-4 py-3">
+        <span className="text-[9px] tracking-[0.18em] uppercase text-muted-foreground">Potential Logic Issue</span>
+      </div>
+      <div className="grid gap-3 p-4">
+        {issues.map((issue, index) => {
+          const suggestion = issue.fixSuggestion
+          const unavailable = suggestion?.status === "unavailable"
+
+          return (
+            <article key={`${issue.message}-${index}`} className="border border-foreground/20 bg-foreground/[0.02]">
+              <div className="grid gap-3 border-b border-foreground/15 p-4">
+                <p className="text-xs leading-6 text-foreground">{issue.message}</p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="border border-foreground/20 px-2 py-1 text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Severity: {issue.severity ?? suggestion?.severity ?? "High"}
+                  </span>
+                  <span className="border border-foreground/20 px-2 py-1 text-[9px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Confidence: {suggestion?.confidence ?? issue.confidence}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-3 p-4">
+                <div className="flex items-center gap-2">
+                  <Wrench size={14} strokeWidth={1.5} className="text-[#ea580c]" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground">
+                    AI Fix Suggestion
+                  </span>
+                </div>
+
+                {unavailable || !suggestion ? (
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">AI Fix Suggestion Unavailable</p>
+                ) : (
+                  <div className="grid gap-4">
+                    <div>
+                      <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">Issue Summary</span>
+                      <p className="mt-2 text-xs leading-6 text-foreground">{suggestion.issueSummary}</p>
+                    </div>
+                    <div className="grid gap-3 lg:grid-cols-2">
+                      <div>
+                        <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">Current</span>
+                        <pre className="mt-2 overflow-auto border border-foreground/15 bg-foreground/[0.03] p-3 text-[11px] leading-5 text-foreground">
+                          {suggestion.currentCode || "Not specified"}
+                        </pre>
+                      </div>
+                      <div>
+                        <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">Suggested</span>
+                        <pre className="mt-2 overflow-auto border border-foreground/15 bg-foreground/[0.03] p-3 text-[11px] leading-5 text-foreground">
+                          {suggestion.suggestedCode}
+                        </pre>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">Explanation</span>
+                      <p className="mt-2 text-xs leading-6 text-foreground">{suggestion.explanation}</p>
+                    </div>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">Potential Impact</span>
+                      <p className="mt-2 text-xs leading-6 text-foreground">{suggestion.potentialImpact}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </article>
+          )
+        })}
+      </div>
     </div>
   )
 }
