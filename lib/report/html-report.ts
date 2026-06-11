@@ -109,6 +109,38 @@ function semanticCases(title: string, cases: SemanticFunctionTestSuite[keyof Pic
   `
 }
 
+function logicIssues(issues: SemanticFunctionTestSuite["potentialLogicIssues"]) {
+  if (!issues?.length) return ""
+
+  return `<div class="issue"><h4>Potential Logic Issues</h4>${issues
+    .map((issue) => {
+      const suggestion = issue.fixSuggestion
+      const fix = !suggestion || suggestion.status === "unavailable"
+        ? `<p class="muted"><strong>AI Fix Suggestion:</strong> AI Fix Suggestion Unavailable</p>`
+        : `
+          <div class="fix">
+            <h4>AI Fix Suggestion</h4>
+            <p><strong>Issue Summary:</strong> ${escapeHtml(suggestion.issueSummary)}</p>
+            <div class="two-col compact">
+              <div><h4>Current</h4><pre>${escapeHtml(suggestion.currentCode || "Not specified")}</pre></div>
+              <div><h4>Suggested</h4><pre>${escapeHtml(suggestion.suggestedCode)}</pre></div>
+            </div>
+            <p><strong>Explanation:</strong> ${escapeHtml(suggestion.explanation)}</p>
+            <p><strong>Potential Impact:</strong> ${escapeHtml(suggestion.potentialImpact)}</p>
+          </div>
+        `
+
+      return `
+        <div class="issue-item">
+          <p>${escapeHtml(issue.message)}</p>
+          <p><strong>Severity:</strong> ${escapeHtml(issue.severity ?? suggestion?.severity ?? "High")} <strong>Confidence:</strong> ${escapeHtml(suggestion?.confidence ?? issue.confidence)}</p>
+          ${fix}
+        </div>
+      `
+    })
+    .join("")}</div>`
+}
+
 function functionSignature(item: AnalysisFunction) {
   const params = item.parameters.map((parameter) => parameter.name).join(", ")
   const owner = item.className ? `${item.className}.` : ""
@@ -123,11 +155,6 @@ function sourceHumanReadableTests(tests?: GeneratedTests | null, functions: Anal
     .map((suite) => {
       const fn = functions.find((item) => item.name === suite.functionName && item.className === suite.className)
       const signature = fn ? functionSignature(fn) : suite.className ? `${suite.className}.${suite.functionName}` : suite.functionName
-      const issues = suite.potentialLogicIssues?.length
-        ? `<div class="issue"><h4>Potential Logic Issues</h4>${suite.potentialLogicIssues
-            .map((issue) => `<p>${escapeHtml(issue.message)} <strong>Confidence: ${escapeHtml(issue.confidence)}</strong></p>`)
-            .join("")}</div>`
-        : ""
 
       return `
         <article class="function-block">
@@ -135,7 +162,7 @@ function sourceHumanReadableTests(tests?: GeneratedTests | null, functions: Anal
             <span>Function</span>
             <strong>${escapeHtml(signature)}</strong>
           </div>
-          ${issues}
+          ${logicIssues(suite.potentialLogicIssues)}
           ${semanticCases("Unit Tests", suite.unitTests)}
           ${semanticCases("Negative Tests", suite.negativeTests)}
           ${semanticCases("Edge Cases", suite.edgeCases)}
@@ -285,6 +312,9 @@ function baseHtml(title: string, generatedAt: string, body: string) {
     .function-heading strong { font-size: 16px; }
     .semantic-group { padding: 0 14px 14px; }
     .issue { margin: 14px; padding: 12px; border: 1px solid var(--accent); }
+    .issue-item { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+    .issue-item:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+    .fix { border: 1px solid var(--border); padding: 12px; margin-top: 12px; background: rgba(255, 255, 255, 0.16); }
     pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.6; }
     .artifact summary { cursor: pointer; padding: 14px; border-bottom: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
     .artifact pre, .logs { background: var(--code); color: var(--code-text); padding: 16px; max-height: 520px; overflow: auto; }

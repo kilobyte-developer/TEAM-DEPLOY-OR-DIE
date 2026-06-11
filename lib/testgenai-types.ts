@@ -78,7 +78,21 @@ export interface SemanticTestCase {
 
 export interface PotentialLogicIssue {
   message: string
-  confidence: "Low" | "Medium" | "High"
+  confidence: "Low" | "Medium" | "High" | number | string
+  severity?: "Low" | "Medium" | "High" | "Critical" | string
+  fixSuggestion?: {
+    status?: "available" | "unavailable"
+    issueSummary?: string
+    currentCode?: string
+    suggestedCode?: string
+    explanation?: string
+    confidence?: number | string
+    severity?: "Low" | "Medium" | "High" | "Critical" | string
+    potentialImpact?: string
+    generatedAt?: string
+    provider?: "gemini"
+    model?: string
+  }
 }
 
 export interface SemanticFunctionTestSuite {
@@ -96,6 +110,11 @@ export interface SemanticFunctionTestSuite {
 export interface GeneratedTests {
   repository: string
   generatedAt: string
+  provider?: {
+    provider: "gemini" | "local"
+    model?: string
+    fallbackReason?: string
+  }
   semanticSuites?: SemanticFunctionTestSuite[]
   unitTests: TestArtifact[]
   edgeCaseTests: TestArtifact[]

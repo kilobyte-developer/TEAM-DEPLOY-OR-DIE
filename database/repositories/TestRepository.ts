@@ -16,8 +16,8 @@ export class TestRepository {
   async createSemanticSuites(uploadedFileId: string, tests: GeneratedTests, analysis?: AnalysisResult) {
     const records = (tests.semanticSuites ?? []).map((suite) => ({
       uploaded_file_id: uploadedFileId,
-      provider: 'local',
-      model: 'mvp_engine',
+      provider: tests.provider?.provider ?? 'local',
+      model: tests.provider?.model ?? 'mvp_engine',
       function_name: suite.functionName,
       signature: signatureFor(suite, analysis),
       unit_tests_json: suite.unitTests,
