@@ -1,0 +1,96 @@
+{
+  "sourceFileName": "withdraw_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\withdraw_faulty.py",
+  "moduleName": "withdraw_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_withdraw_faulty\\test_withdraw_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_withdraw_faulty\\test_withdraw_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_withdraw_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:17.786144Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "can_withdraw",
+        "fileName": "withdraw_faulty.py",
+        "parameters": [
+          {
+            "name": "balance",
+            "type": "Any"
+          },
+          {
+            "name": "amount",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function can_withdraw extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "can_withdraw",
+      "fileName": "withdraw_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function can_withdraw appears to return True for every input, which conflicts with expected validation behavior. Overdrafts would be allowed.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Sufficient Balance",
+          "category": "unit",
+          "input": "balance = 100\namount = 50",
+          "expected": "True because amount is less than or equal to balance.\n\nPotential Logic Issue:\nFunction can_withdraw appears to return True for every input, which conflicts with expected validation behavior. Overdrafts would be allowed.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Insufficient Balance",
+          "category": "unit",
+          "input": "balance = 100\namount = 150",
+          "expected": "False because amount exceeds balance."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Negative Amount",
+          "category": "negative",
+          "input": "balance = 100\namount = -1",
+          "expected": "False because withdrawal amount must be positive."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Exact Balance",
+          "category": "edge",
+          "input": "balance = 100\namount = 100",
+          "expected": "True because withdrawing the exact available balance is allowed."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "One Over Balance",
+          "category": "boundary",
+          "input": "balance = 100\namount = 101",
+          "expected": "False because amount is just above balance."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 6,
+    "edgeTestsGenerated": 1
+  }
+}

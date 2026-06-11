@@ -1,0 +1,92 @@
+{
+  "sourceFileName": "age_validation_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\age_validation_faulty.py",
+  "moduleName": "age_validation_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_age_validation_faulty\\test_age_validation_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_age_validation_faulty\\test_age_validation_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_age_validation_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:11.441739Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "is_adult",
+        "fileName": "age_validation_faulty.py",
+        "parameters": [
+          {
+            "name": "age",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function is_adult extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "is_adult",
+      "fileName": "age_validation_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function is_adult uses threshold 100 but adult age intent expects threshold 18.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Valid Adult Age",
+          "category": "unit",
+          "input": "age = 21",
+          "expected": "True because 21 satisfies adult age rules.\n\nPotential Logic Issue:\nFunction is_adult uses threshold 100 but adult age intent expects threshold 18.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Invalid Adult Age",
+          "category": "unit",
+          "input": "age = 17",
+          "expected": "False because 17 does not satisfy adult age rules."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Clearly Invalid Value",
+          "category": "negative",
+          "input": "age = 17",
+          "expected": "False because adult age validation must reject invalid values."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Boundary Value",
+          "category": "edge",
+          "input": "age = 18",
+          "expected": "True because 18 is the expected inclusive adult age boundary."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Just Below Boundary",
+          "category": "boundary",
+          "input": "age = 17",
+          "expected": "False because 17 is below the expected adult age boundary."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 5,
+    "edgeTestsGenerated": 1
+  }
+}

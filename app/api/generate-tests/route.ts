@@ -59,6 +59,29 @@ function existingHarness(code: string) {
   return index >= 0 ? code.slice(0, index).trim() : code
 }
 
+function semanticAssertionBlocks(code: string) {
+  const blocks: string[] = []
+  const matches = Array.from(code.matchAll(/^def test_[\w_]+_semantic_behavior(?:_\d+)?\(\):/gm))
+
+  matches.forEach((match, index) => {
+    const start = match.index ?? 0
+    const next = matches[index + 1]?.index ?? code.length
+    blocks.push(code.slice(start, next).trim())
+  })
+
+  return blocks
+}
+
+function preserveBaselineSemanticAssertions(candidateCode: string, baselineCode: string) {
+  const missingBlocks = semanticAssertionBlocks(baselineCode).filter((block) => {
+    const name = block.match(/^def (test_[\w_]+)\(/)?.[1]
+    return name ? !candidateCode.includes(`def ${name}(`) : false
+  })
+
+  if (!missingBlocks.length) return candidateCode
+  return `${candidateCode.trim()}\n\n# Preserved executable semantic assertions from local intent analysis.\n\n${missingBlocks.join('\n\n')}\n`
+}
+
 function buildGeminiSourcePrompt(sourceCode: string, baseline: GeneratedTests) {
   return `You are TestGenAI, a senior Python QA engineer.
 
@@ -106,7 +129,10 @@ function normalizeGeminiSourcePayload(raw: unknown, baseline: GeneratedTests): G
     throw new Error('Gemini source-code response did not include semantic suites.')
   }
 
-  const unitCode = cleanCodeBlock(payload.unitTestCode)
+  const unitCode = preserveBaselineSemanticAssertions(
+    cleanCodeBlock(payload.unitTestCode),
+    baseline.unitTests[0]?.code ?? '',
+  )
   const edgeCode = cleanCodeBlock(payload.edgeTestCode)
   if (!unitCode.includes('def test_') || !edgeCode.includes('def test_')) {
     throw new Error('Gemini source-code response did not include executable pytest functions.')

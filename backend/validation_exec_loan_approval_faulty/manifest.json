@@ -1,0 +1,92 @@
+{
+  "sourceFileName": "loan_approval_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\loan_approval_faulty.py",
+  "moduleName": "loan_approval_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_loan_approval_faulty\\test_loan_approval_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_loan_approval_faulty\\test_loan_approval_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_loan_approval_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:15.685188Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "approve_loan",
+        "fileName": "loan_approval_faulty.py",
+        "parameters": [
+          {
+            "name": "score",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function approve_loan extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "approve_loan",
+      "fileName": "loan_approval_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function approve_loan appears to approve scores below the lending threshold and reject qualified scores.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Qualified Score",
+          "category": "unit",
+          "input": "score = 720",
+          "expected": "True because score 720 meets the loan approval threshold.\n\nPotential Logic Issue:\nFunction approve_loan appears to approve scores below the lending threshold and reject qualified scores.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Unqualified Score",
+          "category": "unit",
+          "input": "score = 650",
+          "expected": "False because score 650 is below the loan approval threshold."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Very Low Score",
+          "category": "negative",
+          "input": "score = 300",
+          "expected": "False because very low scores must not be approved."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Threshold Score",
+          "category": "edge",
+          "input": "score = 700",
+          "expected": "True because 700 is the expected inclusive approval threshold."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Just Below Threshold",
+          "category": "boundary",
+          "input": "score = 699",
+          "expected": "False because 699 is below the approval threshold."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 6,
+    "edgeTestsGenerated": 1
+  }
+}

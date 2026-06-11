@@ -1,0 +1,85 @@
+{
+  "sourceFileName": "discount_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\discount_faulty.py",
+  "moduleName": "discount_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_discount_faulty\\test_discount_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_discount_faulty\\test_discount_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_discount_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:12.273954Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "calculate_discount",
+        "fileName": "discount_faulty.py",
+        "parameters": [
+          {
+            "name": "price",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function calculate_discount extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "calculate_discount",
+      "fileName": "discount_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function name implies reducing value but implementation appears to increase it.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Standard Discount",
+          "category": "unit",
+          "input": "price = 100",
+          "expected": "Discounted amount is less than the original price and never negative.\n\nPotential Logic Issue:\nFunction name implies reducing value but implementation appears to increase it.\n\nConfidence: High"
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Negative Price",
+          "category": "negative",
+          "input": "price = -1",
+          "expected": "Input is rejected or handled safely because a price cannot be negative."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Zero Price",
+          "category": "edge",
+          "input": "price = 0",
+          "expected": "Discounted amount remains 0 and does not become negative."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Minimum Positive Price",
+          "category": "boundary",
+          "input": "price = 1",
+          "expected": "Discounted amount is between 0 and the original price."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 5,
+    "edgeTestsGenerated": 1
+  }
+}

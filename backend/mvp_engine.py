@@ -640,7 +640,7 @@ def modulo_return_details(node: ast.FunctionDef) -> dict[str, Any] | None:
 
 def implementation_matches_even_intent(details: dict[str, Any]) -> bool:
     if details["divisor"] != 2:
-        return True
+        return False
     if isinstance(details["operator"], ast.Eq):
         return details["remainder"] == 0
     if isinstance(details["operator"], ast.NotEq):
@@ -650,7 +650,7 @@ def implementation_matches_even_intent(details: dict[str, Any]) -> bool:
 
 def implementation_matches_odd_intent(details: dict[str, Any]) -> bool:
     if details["divisor"] != 2:
-        return True
+        return False
     if isinstance(details["operator"], ast.Eq):
         return details["remainder"] == 1
     if isinstance(details["operator"], ast.NotEq):
@@ -671,11 +671,11 @@ def infer_even_odd_intent_cases(node: ast.FunctionDef, function: dict[str, Any])
     details = modulo_return_details(node)
     issues: list[dict[str, str]] = []
 
-    if details and details["divisor"] == 2:
+    if details:
         matches_intent = implementation_matches_even_intent(details) if is_even_intent else implementation_matches_odd_intent(details)
         if not matches_intent:
             expected_kind = "even" if is_even_intent else "odd"
-            actual_kind = "odd" if is_even_intent else "even"
+            actual_kind = "all" if details["divisor"] != 2 else ("odd" if is_even_intent else "even")
             issues.append(
                 semantic_issue(
                     f"Function name suggests checking {expected_kind} numbers but implementation appears to return True for {actual_kind} numbers."
@@ -812,6 +812,279 @@ def infer_discount_intent_cases(node: ast.FunctionDef, function: dict[str, Any])
                 format_case_input(parameters, {parameter_name: 1}),
                 "Discounted amount is between 0 and the original price.",
             )
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def constant_return_value(node: ast.FunctionDef) -> Any:
+    value = returned_expression(node)
+    if isinstance(value, ast.Constant):
+        return value.value
+    return None
+
+
+def comparison_return_details(node: ast.FunctionDef) -> dict[str, Any] | None:
+    value = returned_expression(node)
+    if not isinstance(value, ast.Compare):
+        return None
+    if len(value.ops) != 1 or len(value.comparators) != 1:
+        return None
+    if not isinstance(value.left, ast.Name):
+        return None
+    comparator = value.comparators[0]
+    if not isinstance(comparator, ast.Constant) or not isinstance(comparator.value, (int, float)):
+        return None
+    return {
+        "parameter": value.left.id,
+        "operator": value.ops[0],
+        "threshold": comparator.value,
+    }
+
+
+def constant_true_issue(function_name: str, impact: str) -> dict[str, str]:
+    return semantic_issue(
+        f"Function {function_name} appears to return True for every input, which conflicts with expected validation behavior. {impact}"
+    )
+
+
+def infer_prime_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if "prime" not in words:
+        return None
+
+    parameters = function["parameters"]
+    parameter_name = first_business_parameter(parameters)
+    issues: list[dict[str, str]] = []
+    if constant_return_value(node) is True:
+        issues.append(constant_true_issue(function["name"], "Composite numbers would be accepted as prime."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", "Prime Number", "unit", format_case_input(parameters, {parameter_name: 2}), append_issue_to_expected("True because 2 is prime.", issues)),
+            semantic_case("unit-2", "Composite Number", "unit", format_case_input(parameters, {parameter_name: 4}), "False because 4 is composite, not prime."),
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Number Below Prime Range", "negative", format_case_input(parameters, {parameter_name: 1}), "False because 1 is not prime.")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "Zero", "edge", format_case_input(parameters, {parameter_name: 0}), "False because 0 is not prime.")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "Smallest Prime Boundary", "boundary", format_case_input(parameters, {parameter_name: 2}), "True because 2 is the smallest prime number.")
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def infer_withdraw_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if "withdraw" not in words:
+        return None
+
+    parameters = function["parameters"]
+    values_ok = {"balance": 100, "amount": 50}
+    values_overdraft = {"balance": 100, "amount": 150}
+    issues: list[dict[str, str]] = []
+    if constant_return_value(node) is True:
+        issues.append(constant_true_issue(function["name"], "Overdrafts would be allowed."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", "Sufficient Balance", "unit", format_case_input(parameters, values_ok), append_issue_to_expected("True because amount is less than or equal to balance.", issues)),
+            semantic_case("unit-2", "Insufficient Balance", "unit", format_case_input(parameters, values_overdraft), "False because amount exceeds balance."),
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Negative Amount", "negative", format_case_input(parameters, {"balance": 100, "amount": -1}), "False because withdrawal amount must be positive.")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "Exact Balance", "edge", format_case_input(parameters, {"balance": 100, "amount": 100}), "True because withdrawing the exact available balance is allowed.")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "One Over Balance", "boundary", format_case_input(parameters, {"balance": 100, "amount": 101}), "False because amount is just above balance.")
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def infer_divide_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if "divide" not in words:
+        return None
+
+    parameters = function["parameters"]
+    issues: list[dict[str, str]] = []
+    if constant_return_value(node) == 0:
+        issues.append(semantic_issue(f"Function {function['name']} appears to ignore inputs and always return 0."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", "Basic Division", "unit", format_case_input(parameters, {"a": 10, "b": 2}), append_issue_to_expected("5.0", issues)),
+            semantic_case("unit-2", "Non Zero Quotient", "unit", format_case_input(parameters, {"a": 9, "b": 3}), "3.0"),
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Zero Divisor", "negative", format_case_input(parameters, {"a": 10, "b": 0}), "ZeroDivisionError is raised because division by zero is invalid.")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "Zero Numerator", "edge", format_case_input(parameters, {"a": 0, "b": 5}), "0.0")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "Unit Divisor", "boundary", format_case_input(parameters, {"a": 7, "b": 1}), "7.0")
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def infer_authenticate_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if not ({"authenticate", "login"} & set(words)):
+        return None
+
+    parameters = function["parameters"]
+    issues: list[dict[str, str]] = []
+    if constant_return_value(node) is True:
+        issues.append(constant_true_issue(function["name"], "Invalid credentials would be accepted."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", "Known Valid Credentials", "unit", format_case_input(parameters, {"user": "admin", "password": "secret"}), append_issue_to_expected("True because valid credentials should authenticate.", issues)),
+            semantic_case("unit-2", "Wrong Password", "unit", format_case_input(parameters, {"user": "admin", "password": "wrong"}), "False because invalid credentials must not authenticate."),
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Empty Credentials", "negative", format_case_input(parameters, {"user": "", "password": ""}), "False because empty credentials are invalid.")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "Unknown User", "edge", format_case_input(parameters, {"user": "unknown", "password": "secret"}), "False because unknown users must not authenticate.")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "Case Sensitive Password", "boundary", format_case_input(parameters, {"user": "admin", "password": "Secret"}), "False because password validation should be exact.")
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def infer_interest_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if "interest" not in words:
+        return None
+
+    parameters = function["parameters"]
+    issues: list[dict[str, str]] = []
+    value = returned_expression(node)
+    if isinstance(value, ast.Name) and value.id in {"p", "principal"}:
+        issues.append(semantic_issue(f"Function {function['name']} returns principal without applying rate and time."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", "Simple Interest", "unit", format_case_input(parameters, {"p": 1000, "r": 5, "t": 2}), append_issue_to_expected("100.0", issues))
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Zero Rate", "negative", format_case_input(parameters, {"p": 1000, "r": 0, "t": 2}), "0.0")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "Zero Time", "edge", format_case_input(parameters, {"p": 1000, "r": 5, "t": 0}), "0.0")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "One Year", "boundary", format_case_input(parameters, {"p": 1000, "r": 5, "t": 1}), "50.0")
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def infer_threshold_boolean_cases(
+    node: ast.FunctionDef,
+    function: dict[str, Any],
+    keyword: str,
+    valid_value: int,
+    invalid_value: int,
+    boundary_value: int,
+    expected_threshold: int,
+    subject: str,
+) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if keyword not in words:
+        return None
+
+    parameters = function["parameters"]
+    parameter_name = first_business_parameter(parameters)
+    issues: list[dict[str, str]] = []
+    details = comparison_return_details(node)
+    if details and details["parameter"] == parameter_name and details["threshold"] != expected_threshold:
+        issues.append(semantic_issue(f"Function {function['name']} uses threshold {details['threshold']} but {subject} intent expects threshold {expected_threshold}."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", f"Valid {subject.title()}", "unit", format_case_input(parameters, {parameter_name: valid_value}), append_issue_to_expected(f"True because {valid_value} satisfies {subject} rules.", issues)),
+            semantic_case("unit-2", f"Invalid {subject.title()}", "unit", format_case_input(parameters, {parameter_name: invalid_value}), f"False because {invalid_value} does not satisfy {subject} rules."),
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Clearly Invalid Value", "negative", format_case_input(parameters, {parameter_name: invalid_value}), f"False because {subject} validation must reject invalid values.")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "Boundary Value", "edge", format_case_input(parameters, {parameter_name: boundary_value}), f"True because {boundary_value} is the expected inclusive {subject} boundary.")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "Just Below Boundary", "boundary", format_case_input(parameters, {parameter_name: boundary_value - 1}), f"False because {boundary_value - 1} is below the expected {subject} boundary.")
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def infer_stock_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if "stock" not in words:
+        return None
+
+    parameters = function["parameters"]
+    parameter_name = first_business_parameter(parameters)
+    issues: list[dict[str, str]] = []
+    details = comparison_return_details(node)
+    if details and isinstance(details["operator"], ast.Lt):
+        issues.append(semantic_issue(f"Function {function['name']} appears to mark negative stock as available."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", "Positive Quantity", "unit", format_case_input(parameters, {parameter_name: 5}), append_issue_to_expected("True because positive quantity is in stock.", issues)),
+            semantic_case("unit-2", "Zero Quantity", "unit", format_case_input(parameters, {parameter_name: 0}), "False because zero quantity is not in stock."),
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Negative Quantity", "negative", format_case_input(parameters, {parameter_name: -1}), "False because negative stock cannot be available.")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "One Item", "edge", format_case_input(parameters, {parameter_name: 1}), "True because one item is available.")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "Zero Boundary", "boundary", format_case_input(parameters, {parameter_name: 0}), "False because zero is the out-of-stock boundary.")
+        ],
+        "potentialLogicIssues": issues,
+    }
+
+
+def infer_loan_approval_intent_cases(node: ast.FunctionDef, function: dict[str, Any]) -> dict[str, Any] | None:
+    words = split_identifier(function["name"])
+    if "loan" not in words and "approve" not in words:
+        return None
+
+    parameters = function["parameters"]
+    parameter_name = first_business_parameter(parameters)
+    issues: list[dict[str, str]] = []
+    details = comparison_return_details(node)
+    if details and isinstance(details["operator"], ast.Lt):
+        issues.append(semantic_issue(f"Function {function['name']} appears to approve scores below the lending threshold and reject qualified scores."))
+
+    return {
+        "unitTests": [
+            semantic_case("unit-1", "Qualified Score", "unit", format_case_input(parameters, {parameter_name: 720}), append_issue_to_expected("True because score 720 meets the loan approval threshold.", issues)),
+            semantic_case("unit-2", "Unqualified Score", "unit", format_case_input(parameters, {parameter_name: 650}), "False because score 650 is below the loan approval threshold."),
+        ],
+        "negativeTests": [
+            semantic_case("negative-1", "Very Low Score", "negative", format_case_input(parameters, {parameter_name: 300}), "False because very low scores must not be approved.")
+        ],
+        "edgeCases": [
+            semantic_case("edge-1", "Threshold Score", "edge", format_case_input(parameters, {parameter_name: 700}), "True because 700 is the expected inclusive approval threshold.")
+        ],
+        "boundaryCases": [
+            semantic_case("boundary-1", "Just Below Threshold", "boundary", format_case_input(parameters, {parameter_name: 699}), "False because 699 is below the approval threshold.")
         ],
         "potentialLogicIssues": issues,
     }
@@ -1013,6 +1286,14 @@ def build_semantic_test_suites(source_code: str, file_path: Path) -> list[dict[s
         cases = (
             infer_even_odd_intent_cases(node, function)
             or infer_discount_intent_cases(node, function)
+            or infer_prime_intent_cases(node, function)
+            or infer_withdraw_intent_cases(node, function)
+            or infer_divide_intent_cases(node, function)
+            or infer_authenticate_intent_cases(node, function)
+            or infer_interest_intent_cases(node, function)
+            or infer_threshold_boolean_cases(node, function, "adult", 21, 17, 18, 18, "adult age")
+            or infer_stock_intent_cases(node, function)
+            or infer_loan_approval_intent_cases(node, function)
             or infer_modulo_boolean_cases(node, function)
             or build_generic_semantic_cases(node, function)
         )

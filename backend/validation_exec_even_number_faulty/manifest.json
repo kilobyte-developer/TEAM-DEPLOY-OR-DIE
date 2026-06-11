@@ -1,0 +1,99 @@
+{
+  "sourceFileName": "even_number_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\even_number_faulty.py",
+  "moduleName": "even_number_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_even_number_faulty\\test_even_number_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_even_number_faulty\\test_even_number_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_even_number_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:13.647201Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "is_even",
+        "fileName": "even_number_faulty.py",
+        "parameters": [
+          {
+            "name": "n",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function is_even extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "is_even",
+      "fileName": "even_number_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function name suggests checking even numbers but implementation appears to return True for all numbers.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Even Number",
+          "category": "unit",
+          "input": "n = 2",
+          "expected": "True because 2 is even.\n\nPotential Logic Issue:\nFunction name suggests checking even numbers but implementation appears to return True for all numbers.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Odd Number",
+          "category": "unit",
+          "input": "n = 3",
+          "expected": "False because 3 is odd, not even."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Missing Required Input",
+          "category": "negative",
+          "input": "No arguments provided",
+          "expected": "TypeError is raised because a required argument is missing."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Zero",
+          "category": "edge",
+          "input": "n = 0",
+          "expected": "True because 0 is even."
+        },
+        {
+          "id": "TC-1-EDGE-002",
+          "title": "Negative Even Number",
+          "category": "edge",
+          "input": "n = -2",
+          "expected": "True because -2 is even."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Adjacent Parity Boundary",
+          "category": "boundary",
+          "input": "n = 3",
+          "expected": "False because adjacent integer 3 changes parity from the valid even case."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 6,
+    "edgeTestsGenerated": 1
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "sourceFileName": "login_faulty.py",
+  "sourceFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\explanatory_faulty_codes\\login_faulty.py",
+  "moduleName": "login_faulty",
+  "unitTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_login_faulty\\test_login_faulty_unit.py",
+  "edgeTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_login_faulty\\test_login_faulty_edge.py",
+  "combinedTestFilePath": "C:\\Users\\Atharva Funde\\Documents\\GitHub\\TEAM DEPLOY OR DIE\\backend\\validation_exec_login_faulty\\test_generated.py",
+  "analysis": {
+    "repository": "local-workspace",
+    "generatedAt": "2026-06-11T15:16:16.395152Z",
+    "functions": [
+      {
+        "id": "fn-1",
+        "name": "authenticate",
+        "fileName": "login_faulty.py",
+        "parameters": [
+          {
+            "name": "user",
+            "type": "Any"
+          },
+          {
+            "name": "password",
+            "type": "Any"
+          }
+        ],
+        "returnType": "Any",
+        "dependencies": [],
+        "description": "Function authenticate extracted from uploaded source."
+      }
+    ],
+    "classes": [],
+    "imports": [],
+    "dependencies": []
+  },
+  "semanticSuites": [
+    {
+      "id": "semantic-1",
+      "functionName": "authenticate",
+      "fileName": "login_faulty.py",
+      "potentialLogicIssues": [
+        {
+          "message": "Function authenticate appears to return True for every input, which conflicts with expected validation behavior. Invalid credentials would be accepted.",
+          "confidence": "High"
+        }
+      ],
+      "unitTests": [
+        {
+          "id": "TC-1-UNIT-001",
+          "title": "Known Valid Credentials",
+          "category": "unit",
+          "input": "user = 'admin'\npassword = 'secret'",
+          "expected": "True because valid credentials should authenticate.\n\nPotential Logic Issue:\nFunction authenticate appears to return True for every input, which conflicts with expected validation behavior. Invalid credentials would be accepted.\n\nConfidence: High"
+        },
+        {
+          "id": "TC-1-UNIT-002",
+          "title": "Wrong Password",
+          "category": "unit",
+          "input": "user = 'admin'\npassword = 'wrong'",
+          "expected": "False because invalid credentials must not authenticate."
+        }
+      ],
+      "negativeTests": [
+        {
+          "id": "TC-1-NEG-001",
+          "title": "Empty Credentials",
+          "category": "negative",
+          "input": "user = ''\npassword = ''",
+          "expected": "False because empty credentials are invalid."
+        }
+      ],
+      "edgeCases": [
+        {
+          "id": "TC-1-EDGE-001",
+          "title": "Unknown User",
+          "category": "edge",
+          "input": "user = 'unknown'\npassword = 'secret'",
+          "expected": "False because unknown users must not authenticate."
+        }
+      ],
+      "boundaryCases": [
+        {
+          "id": "TC-1-BOUND-001",
+          "title": "Case Sensitive Password",
+          "category": "boundary",
+          "input": "user = 'admin'\npassword = 'Secret'",
+          "expected": "False because password validation should be exact."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "filesCovered": 1,
+    "unitTestsGenerated": 6,
+    "edgeTestsGenerated": 1
+  }
+}
