@@ -213,3 +213,135 @@ export interface TestGenAIState {
   evaluationResults: EvaluationRecord[]
   activity: ActivityItem[]
 }
+
+export interface PastRecordSummary {
+  id: string
+  uploadedFileId: string
+  fileName: string
+  language: string
+  uploadTimestamp: string | null
+  executionDate: string
+  totalTests: number
+  passed: number
+  failed: number
+  passRate: number
+  coveragePercent: number
+  providerUsed: string
+  status: string
+}
+
+export interface PastRecordDetails {
+  id: string
+  file: {
+    id: string
+    fileName: string
+    language: string
+    uploadTimestamp: string | null
+  }
+  provider: {
+    provider: string
+    model: string
+  }
+  execution: {
+    executionTimestamp: string
+    status: string
+    totalTests: number
+    passed: number
+    failed: number
+    passRate: number
+    executionTime: string
+    logs: ExecutionLogEntry[]
+    details: Array<{
+      test_name: string
+      status: string
+      expected_output?: string | null
+      actual_output?: string | null
+      failure_reason?: string | null
+      duration?: string | null
+    }>
+  }
+  analysis: {
+    generatedAt: string | null
+    functionCount: number
+    classCount: number
+    importCount: number
+    dependencyCount: number
+    functions: unknown[]
+    classes: unknown[]
+    imports: unknown[]
+    dependencies: unknown[]
+  }
+  coverage: {
+    generatedAt: string | null
+    coveragePercent: number
+    functionsCovered: number
+    functionsMissing: string[]
+    notes: string
+    raw: unknown
+  }
+  semanticTests: Array<{
+    functionName: string
+    signature: string
+    provider: string
+    model: string
+    generatedAt: string
+    unitTests: SemanticTestCase[]
+    negativeTests: SemanticTestCase[]
+    edgeCases: SemanticTestCase[]
+    boundaryCases: SemanticTestCase[]
+    potentialLogicIssues: PotentialLogicIssue[]
+  }>
+  hasHtmlReport: boolean
+}
+
+export interface AnalyticsDashboardData {
+  generatedAt?: string
+  error?: string
+  isEmpty: boolean
+  kpis: {
+    totalFilesUploaded: number
+    totalExecutions: number
+    totalTestsGenerated: number
+    totalTestsPassed: number
+    totalTestsFailed: number
+    averagePassRate: number
+    averageCoverage: number
+    userStoriesProcessed: number
+    logicIssuesDetected: number
+  }
+  charts: {
+    passFail: Array<{ name: string; value: number }>
+    coverageTrend: Array<{ date: string; coverage: number; fileName?: string }>
+    executionsOverTime: Array<{ date: string; executions: number }>
+    providerUsage: Array<{ name: string; value: number }>
+    logicIssuesTrend: Array<{ date: string; issues: number }>
+  }
+  insights: {
+    mostTestedFile?: string
+    highestCoverageFile?: string
+    highestCoverage?: number
+    lowestCoverageFile?: string
+    lowestCoverage?: number
+    bestPassRateFile?: string
+    bestPassRate?: number
+    worstPassRateFile?: string
+    worstPassRate?: number
+    mostRecentExecution?: string
+    totalHistoricalCoverageAverage?: number
+    functionsAnalyzed?: number
+  }
+  leaderboard: Array<{
+    fileName: string
+    executions: number
+    passRate: number
+    coverage: number
+  }>
+  activity: Array<{
+    id: string
+    type: 'upload' | 'generation' | 'execution' | 'coverage' | 'story'
+    label: string
+    detail: string
+    timestamp: string
+    displayTime: string
+  }>
+}

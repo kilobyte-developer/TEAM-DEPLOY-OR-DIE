@@ -3,10 +3,11 @@ type QueryOptions = {
   order?: string
   limit?: number
   eq?: Record<string, string>
+  in?: Record<string, string[]>
 }
 
 type RequestOptions = {
-  method: 'GET' | 'POST' | 'PATCH'
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE'
   query?: QueryOptions
   body?: unknown
 }
@@ -23,6 +24,10 @@ function buildQuery(options?: QueryOptions) {
 
   for (const [key, value] of Object.entries(options?.eq ?? {})) {
     params.set(key, `eq.${value}`)
+  }
+
+  for (const [key, values] of Object.entries(options?.in ?? {})) {
+    params.set(key, `in.(${values.join(',')})`)
   }
 
   const query = params.toString()
@@ -97,6 +102,12 @@ export class DatabaseService {
     const response = await this.request<T[]>(table, { method: 'PATCH', query: { eq }, body: patch })
     if (response) databaseLog('record_updated', { table, count: response.length })
     return response?.[0] as T | undefined
+  }
+
+  async delete<T>(table: string, query: QueryOptions = {}) {
+    const response = await this.request<T[]>(table, { method: 'DELETE', query })
+    if (response) databaseLog('record_deleted', { table, count: response.length })
+    return response ?? []
   }
 
   async select<T>(table: string, query: QueryOptions = {}) {

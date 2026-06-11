@@ -1,9 +1,12 @@
 import type {
   AnalysisResult,
+  AnalyticsDashboardData,
   CoverageReport,
   ExecutionResult,
   InputMode,
   GeneratedTests,
+  PastRecordDetails,
+  PastRecordSummary,
   UploadedSourceFile,
   UserStoryTestSuite,
 } from '@/lib/testgenai-types'
@@ -98,4 +101,32 @@ export async function runTests(mode: InputMode): Promise<ExecutionResult> {
 export async function getCoverage(): Promise<CoverageReport> {
   const response = await fetch(`${FASTAPI_BASE_URL}/coverage`)
   return parseJsonResponse<CoverageReport>(response)
+}
+
+export async function getPastRecords(): Promise<PastRecordSummary[]> {
+  const response = await fetch('/api/history', { cache: 'no-store' })
+  const payload = await parseJsonResponse<{ records: PastRecordSummary[] }>(response)
+  return payload.records
+}
+
+export async function getPastRecordDetails(id: string): Promise<PastRecordDetails> {
+  const response = await fetch(`/api/history/${encodeURIComponent(id)}`, { cache: 'no-store' })
+  return parseJsonResponse<PastRecordDetails>(response)
+}
+
+export async function deletePastRecords(password: string, count: number): Promise<{ deleted: number; requested: number }> {
+  const response = await fetch('/api/history', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password, count }),
+  })
+
+  return parseJsonResponse<{ deleted: number; requested: number }>(response)
+}
+
+export async function getAnalyticsDashboard(): Promise<AnalyticsDashboardData> {
+  const response = await fetch('/api/dashboard', { cache: 'no-store' })
+  return parseJsonResponse<AnalyticsDashboardData>(response)
 }
