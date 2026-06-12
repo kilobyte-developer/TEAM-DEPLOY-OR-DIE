@@ -23,6 +23,7 @@ pnpm-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.example
 
 # typescript
 *.tsbuildinfo
@@ -65,3 +66,5 @@ backend/generated_tests/
 backend/reports/
 backend/__pycache__/
 backend/.coverage
+.vercel
+.env*
