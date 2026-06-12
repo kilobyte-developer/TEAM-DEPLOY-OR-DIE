@@ -352,6 +352,29 @@ def get_coverage():
     return response
 
 
+@app.get("/results")
+def get_results():
+    """Return the last test execution results JSON."""
+    if not RESULTS_PATH.exists():
+        raise HTTPException(status_code=404, detail="No results yet. Run tests first.")
+    return json.loads(RESULTS_PATH.read_text(encoding="utf-8"))
+
+
+@app.get("/download-tests")
+def download_tests():
+    """Return the combined generated test file as a downloadable Python file."""
+    from fastapi.responses import PlainTextResponse
+
+    test_file = GENERATED_TESTS_DIR / "test_generated.py"
+    if not test_file.exists():
+        raise HTTPException(status_code=404, detail="No generated tests found. Generate tests first.")
+    return PlainTextResponse(
+        content=test_file.read_text(encoding="utf-8"),
+        media_type="text/x-python",
+        headers={"Content-Disposition": 'attachment; filename="test_generated.py"'},
+    )
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
