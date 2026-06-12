@@ -84,6 +84,7 @@ jobs:
       - name: Run pytest
         run: |
           pytest \
+            --import-mode=importlib \
             --ignore=generated_tests \
             --cov=. \
             --cov-report=term-missing \

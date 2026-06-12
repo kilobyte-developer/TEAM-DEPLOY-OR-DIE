@@ -1,0 +1,84 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.0.3, pluggy-1.6.0 -- /opt/hostedtoolcache/Python/3.12.13/x64/bin/python
+cachedir: .pytest_cache
+rootdir: /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend
+plugins: anyio-4.13.0, cov-7.1.0
+collecting ... collected 71 items / 9 errors
+
+==================================== ERRORS ====================================
+______ ERROR collecting validation_exec_discount_faulty/test_generated.py ______
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_discount_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______ ERROR collecting validation_exec_divide_faulty/test_generated.py _______
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_divide_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____ ERROR collecting validation_exec_even_number_faulty/test_generated.py _____
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_even_number_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+______ ERROR collecting validation_exec_interest_faulty/test_generated.py ______
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_interest_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____ ERROR collecting validation_exec_inventory_faulty/test_generated.py ______
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_inventory_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+___ ERROR collecting validation_exec_loan_approval_faulty/test_generated.py ____
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_loan_approval_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______ ERROR collecting validation_exec_login_faulty/test_generated.py ________
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_login_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______ ERROR collecting validation_exec_prime_faulty/test_generated.py ________
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_prime_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+______ ERROR collecting validation_exec_withdraw_faulty/test_generated.py ______
+import file mismatch:
+imported module 'test_generated' has this __file__ attribute:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_age_validation_faulty/test_generated.py
+which is not the same as the test file we want to collect:
+  /home/runner/work/TEAM-DEPLOY-OR-DIE/TEAM-DEPLOY-OR-DIE/backend/validation_exec_withdraw_faulty/test_generated.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+=========================== short test summary info ============================
+ERROR validation_exec_discount_faulty/test_generated.py
+ERROR validation_exec_divide_faulty/test_generated.py
+ERROR validation_exec_even_number_faulty/test_generated.py
+ERROR validation_exec_interest_faulty/test_generated.py
+ERROR validation_exec_inventory_faulty/test_generated.py
+ERROR validation_exec_loan_approval_faulty/test_generated.py
+ERROR validation_exec_login_faulty/test_generated.py
+ERROR validation_exec_prime_faulty/test_generated.py
+ERROR validation_exec_withdraw_faulty/test_generated.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 9 errors during collection !!!!!!!!!!!!!!!!!!!!
+============================== 9 errors in 0.22s ===============================
+Error: Process completed with exit code 2.

@@ -177,9 +177,10 @@ def mock_dependency_block(dependencies: list[str], module_name: str) -> str:
     return json.dumps(roots, indent=2)
 
 
-def build_header(module_name: str, upload_dir: Path, dependencies: list[str], include_pytest: bool) -> str:
+def build_header(module_name: str, upload_dir: Path, dependencies: list[str], include_pytest: bool, generated_dir: Path | None = None) -> str:
     imports = [
         "import importlib",
+        "import os",
         "import sys",
         "from pathlib import Path",
         "from unittest.mock import MagicMock",
@@ -190,9 +191,22 @@ def build_header(module_name: str, upload_dir: Path, dependencies: list[str], in
     header = "\n".join(imports)
     deps_json = mock_dependency_block(dependencies, module_name)
 
+    # Compute a relative path from the test file's directory to the source directory.
+    # This makes generated tests portable across machines and operating systems.
+    if generated_dir is not None:
+        try:
+            rel = os.path.relpath(upload_dir.resolve(), generated_dir.resolve())
+            # Use POSIX separators so the string literal is cross-platform
+            rel_posix = Path(rel).as_posix()
+        except ValueError:
+            # Fallback: on Windows, relpath can fail across drives
+            rel_posix = upload_dir.resolve().as_posix()
+    else:
+        rel_posix = upload_dir.resolve().as_posix()
+
     return (
         f"{header}\n\n"
-        f'UPLOAD_DIR = Path(r"{str(upload_dir.resolve())}")\n'
+        f'UPLOAD_DIR = (Path(__file__).resolve().parent / "{rel_posix}").resolve()\n'
         f'MODULE_NAME = "{module_name}"\n'
         f"DEPENDENCIES = {deps_json}\n\n"
         "if str(UPLOAD_DIR) not in sys.path:\n"
@@ -207,6 +221,7 @@ def build_header(module_name: str, upload_dir: Path, dependencies: list[str], in
         "        return importlib.reload(sys.modules[MODULE_NAME])\n"
         "    return importlib.import_module(MODULE_NAME)\n"
     )
+
 
 
 def sanitize_test_name(value: str) -> str:
@@ -372,7 +387,7 @@ def build_semantic_assertion_tests(semantic_suites: list[dict[str, Any]], analys
     return lines, count
 
 
-def build_unit_tests(source_code: str, file_path: Path, semantic_suites: list[dict[str, Any]] | None = None) -> tuple[str, int]:
+def build_unit_tests(source_code: str, file_path: Path, semantic_suites: list[dict[str, Any]] | None = None, generated_dir: Path | None = None) -> tuple[str, int]:
     tree = ast.parse(source_code)
     analysis = analyze_python_source(source_code, file_path.name)
     module_name = file_path.stem
@@ -448,11 +463,11 @@ def build_unit_tests(source_code: str, file_path: Path, semantic_suites: list[di
         count = 1
 
     body = "\n".join(lines).rstrip() + "\n"
-    header = build_header(module_name, file_path.parent, analysis["dependencies"], include_pytest=False)
+    header = build_header(module_name, file_path.parent, analysis["dependencies"], include_pytest=False, generated_dir=generated_dir)
     return f"{header}\n\n{body}", count
 
 
-def build_edge_tests(source_code: str, file_path: Path) -> tuple[str, int]:
+def build_edge_tests(source_code: str, file_path: Path, generated_dir: Path | None = None) -> tuple[str, int]:
     tree = ast.parse(source_code)
     analysis = analyze_python_source(source_code, file_path.name)
     module_name = file_path.stem
@@ -503,7 +518,7 @@ def build_edge_tests(source_code: str, file_path: Path) -> tuple[str, int]:
         count = 1
 
     body = "\n".join(lines).rstrip() + "\n"
-    header = build_header(module_name, file_path.parent, analysis["dependencies"], include_pytest=True)
+    header = build_header(module_name, file_path.parent, analysis["dependencies"], include_pytest=True, generated_dir=generated_dir)
     return f"{header}\n\n{body}", count
 
 
@@ -1363,8 +1378,8 @@ def generate_tests_for_file(file_path: Path, generated_dir: Path) -> dict[str, A
     source_code = file_path.read_text(encoding="utf-8")
     analysis = analyze_python_source(source_code, file_path.name)
     semantic_suites = build_semantic_test_suites(source_code, file_path)
-    unit_code, unit_count = build_unit_tests(source_code, file_path, semantic_suites)
-    edge_code, edge_count = build_edge_tests(source_code, file_path)
+    unit_code, unit_count = build_unit_tests(source_code, file_path, semantic_suites, generated_dir=generated_dir)
+    edge_code, edge_count = build_edge_tests(source_code, file_path, generated_dir=generated_dir)
 
     generated_dir.mkdir(parents=True, exist_ok=True)
 

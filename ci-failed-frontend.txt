@@ -1,0 +1,5 @@
+/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+ ERROR  packages field missing or empty
+For help, run: pnpm help store
+Error:  ERROR  packages field missing or empty
+For help, run: pnpm help store

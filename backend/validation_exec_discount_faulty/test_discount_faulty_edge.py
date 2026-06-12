@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 import pytest
 
-UPLOAD_DIR = Path(r"C:\Users\Atharva Funde\Documents\GitHub\TEAM DEPLOY OR DIE\explanatory_faulty_codes")
+UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "explanatory_faulty_codes"
 MODULE_NAME = "discount_faulty"
 DEPENDENCIES = []
 
