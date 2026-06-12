@@ -13,6 +13,12 @@ const GENERATED_TESTS_DIR = '/tmp/testgenai_generated_tests'
 const UPLOADS_DIR = '/tmp/testgenai_uploads'
 const GEMINI_MODEL = 'gemini-2.5-flash-lite'
 const AI_FIX_MODEL = 'gemini-2.5-flash-lite'
+const FASTAPI_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ?? 'http://localhost:8000'
+
+/** True when running on Vercel / any remote deployment (not local dev). */
+function isRemote() {
+  return !FASTAPI_URL.includes('localhost') && !FASTAPI_URL.includes('127.0.0.1')
+}
 
 type Manifest = {
   sourceFileName: string
@@ -339,6 +345,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'file_name is required and must be a string.' }, { status: 400 })
     }
 
+    // ── Remote (Vercel → Render) ─────────────────────────────────────────────
+    if (isRemote()) {
+      const resp = await fetch(`${FASTAPI_URL}/generate-tests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file_name: fileName }),
+      })
+      const data = await resp.json()
+      if (!resp.ok) {
+        return NextResponse.json({ error: data?.detail ?? 'Test generation failed on backend.' }, { status: resp.status })
+      }
+      await testgenaiDatabase.recordGeneratedTests(fileName, data)
+      return NextResponse.json(data)
+    }
+
+    // ── Local dev ────────────────────────────────────────────────────────────
     const filePath = join(UPLOADS_DIR, fileName)
     const result = spawnSync(getVenvPython(), [ENGINE_PATH, 'generate-tests', filePath, GENERATED_TESTS_DIR], {
       cwd: BACKEND_DIR,

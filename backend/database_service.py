@@ -133,6 +133,29 @@ class TestGenAIDatabaseService:
         except Exception as error:
             database_log("analysis_store_failed", message=str(error))
 
+    def record_generated_tests(self, file_name: str, tests: dict[str, Any]) -> None:
+        """Persist generated test results to Supabase (no-op if DB is disabled)."""
+        try:
+            uploaded_file = self.find_latest_file(file_name)
+            if not uploaded_file:
+                return
+            summary = tests.get("summary", {})
+            self.db.insert(
+                "generated_pytest_artifacts",
+                {
+                    "uploaded_file_id": uploaded_file["id"],
+                    "unit_tests_count": summary.get("unitTestsGenerated", 0),
+                    "edge_tests_count": summary.get("edgeTestsGenerated", 0),
+                    "artifact_content": tests,
+                    "generated_at": tests.get("generatedAt"),
+                },
+            )
+            self.db.update("uploaded_files", {"id": uploaded_file["id"]}, {"tests_generated": True})
+            self.refresh_metrics()
+            database_log("generated_tests_stored", uploaded_file_id=uploaded_file["id"])
+        except Exception as error:
+            database_log("generated_tests_store_failed", message=str(error))
+
     def record_execution(self, file_name: str, execution: dict[str, Any]) -> None:
         try:
             uploaded_file = self.find_latest_file(file_name)

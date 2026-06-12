@@ -13,6 +13,12 @@ const GENERATED_TESTS_DIR = join(tmpdir(), 'testgenai_generated_tests')
 const REPORTS_DIR = join(tmpdir(), 'testgenai_reports')
 const MANIFEST_PATH = join(GENERATED_TESTS_DIR, 'manifest.json')
 const RESULTS_PATH = join(REPORTS_DIR, 'results.json')
+const FASTAPI_URL = process.env.NEXT_PUBLIC_FASTAPI_URL ?? 'http://localhost:8000'
+
+/** True when running on Vercel / any remote deployment (not local dev). */
+function isRemote() {
+  return !FASTAPI_URL.includes('localhost') && !FASTAPI_URL.includes('127.0.0.1')
+}
 
 type Manifest = {
   sourceFileName: string
@@ -63,6 +69,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // ── Remote (Vercel → Render) ─────────────────────────────────────────────
+    if (isRemote()) {
+      const resp = await fetch(`${FASTAPI_URL}/run-tests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      })
+      const data = await resp.json()
+      if (!resp.ok) {
+        return NextResponse.json({ error: data?.detail ?? 'Test execution failed on backend.' }, { status: resp.status })
+      }
+      return NextResponse.json(data)
+    }
+
+    // ── Local dev ────────────────────────────────────────────────────────────
     const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf-8')) as Manifest
     const started = performance.now()
     const result = spawnSync(
