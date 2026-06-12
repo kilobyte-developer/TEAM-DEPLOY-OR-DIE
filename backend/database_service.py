@@ -91,6 +91,48 @@ class TestGenAIDatabaseService:
         )
         return rows[0] if rows else None
 
+    def record_upload(self, upload: dict[str, Any]) -> None:
+        """Persist an upload event to Supabase (no-op if DB is disabled)."""
+        try:
+            self.db.insert(
+                "uploaded_files",
+                {
+                    "file_name": upload.get("fileName"),
+                    "file_path": upload.get("filePath"),
+                    "language": upload.get("language", "Python"),
+                    "file_size": upload.get("fileSize"),
+                    "upload_timestamp": upload.get("uploadedAt"),
+                    "repository_name": upload.get("repositoryName", "local-workspace"),
+                    "source_type": upload.get("sourceType", "local"),
+                },
+            )
+            self.refresh_metrics()
+            database_log("upload_stored", file_name=upload.get("fileName"))
+        except Exception as error:
+            database_log("upload_store_failed", message=str(error))
+
+    def record_analysis(self, file_name: str, analysis: dict[str, Any]) -> None:
+        """Persist an analysis result to Supabase (no-op if DB is disabled)."""
+        try:
+            uploaded_file = self.find_latest_file(file_name)
+            if not uploaded_file:
+                return
+            self.db.insert(
+                "analysis_results",
+                {
+                    "uploaded_file_id": uploaded_file["id"],
+                    "functions_json": analysis.get("functions", []),
+                    "classes_json": analysis.get("classes", []),
+                    "imports_json": analysis.get("imports", []),
+                    "dependencies_json": analysis.get("dependencies", []),
+                    "generated_at": analysis.get("generatedAt"),
+                },
+            )
+            self.db.update("uploaded_files", {"id": uploaded_file["id"]}, {"analysis_completed": True})
+            database_log("analysis_stored", uploaded_file_id=uploaded_file["id"])
+        except Exception as error:
+            database_log("analysis_store_failed", message=str(error))
+
     def record_execution(self, file_name: str, execution: dict[str, Any]) -> None:
         try:
             uploaded_file = self.find_latest_file(file_name)
