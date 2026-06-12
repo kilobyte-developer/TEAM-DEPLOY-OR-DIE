@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process'
 import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
 import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
-import { VENV_PYTHON, BACKEND_DIR } from '@/lib/python-resolver'
+import { getVenvPython, BACKEND_DIR } from '@/lib/python-resolver'
 
 export const runtime = 'nodejs'
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const filePath = join(UPLOADS_DIR, fileName)
-    const result = spawnSync(VENV_PYTHON, [ENGINE_PATH, 'analyze', filePath], {
+    const result = spawnSync(getVenvPython(), [ENGINE_PATH, 'analyze', filePath], {
       cwd: BACKEND_DIR,
       encoding: 'utf-8',
     })

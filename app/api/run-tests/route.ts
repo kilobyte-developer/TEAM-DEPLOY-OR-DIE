@@ -5,7 +5,7 @@ import { join } from 'path'
 import { tmpdir } from 'os'
 import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 import type { ExecutionResult } from '@/lib/testgenai-types'
-import { VENV_PYTHON, BACKEND_DIR } from '@/lib/python-resolver'
+import { getVenvPython, BACKEND_DIR } from '@/lib/python-resolver'
 
 export const runtime = 'nodejs'
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf-8')) as Manifest
     const started = performance.now()
     const result = spawnSync(
-      VENV_PYTHON,
+      getVenvPython(),
       ['-m', 'pytest', manifest.unitTestFilePath, manifest.edgeTestFilePath, '-v', '--tb=short'],
       {
         cwd: BACKEND_DIR,

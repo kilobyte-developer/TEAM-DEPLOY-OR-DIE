@@ -7,48 +7,58 @@
  *   On Ubuntu, 'python3' is /usr/bin/python3 (system Python, no venv packages).
  *   We must reference the venv interpreter explicitly.
  *
- * Why process.cwd() is safe here:
- *   Next.js always sets process.cwd() to the project root (where next.config.js
- *   lives), regardless of where `npm run dev` was invoked. This is a Next.js
- *   runtime guarantee for API routes.
+ * Why paths are built lazily inside functions (never at module top-level):
+ *   Turbopack statically analyses all path.join() calls at the module level
+ *   and follows any resulting symlinks during the build. The venv symlinks
+ *   point to /usr/bin/python3 (an absolute path outside the project root),
+ *   which Turbopack rejects with "points out of the filesystem root".
+ *   Building paths only inside a called function prevents Turbopack from
+ *   statically resolving them at bundle time.
  *
  * Cross-platform:
  *   Linux/macOS venv: backend/venv/bin/python
  *   Windows venv:     backend/venv/Scripts/python.exe
  */
 
-import { existsSync } from 'fs'
-import { join } from 'path'
-
-// Next.js always sets process.cwd() to the project root.
-export const PROJECT_ROOT = process.cwd()
-export const BACKEND_DIR = join(PROJECT_ROOT, 'backend')
+/**
+ * Returns the absolute path to the project backend directory.
+ * Computed lazily — do not call at module scope.
+ */
+export function getBackendDir(): string {
+  // Build the path using runtime values only — prevents Turbopack static analysis.
+  const sep = require('path').sep as string
+  const parts: string[] = [process.cwd(), 'backend']
+  return parts.join(sep)
+}
 
 /**
  * Returns the absolute path to the venv Python executable, cross-platform.
- * Checks common venv locations in order, then falls back with a descriptive error.
+ * Call this inside a request handler ONLY — never at the top level of a module.
  *
  * @throws Error with setup instructions if no venv python is found
  */
-function resolveVenvPython(): string {
+export function getVenvPython(): string {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { existsSync } = require('fs') as typeof import('fs')
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { join } = require('path') as typeof import('path')
+
+  const backendDir = getBackendDir()
   const isWindows = process.platform === 'win32'
 
-  const candidates = isWindows
-    ? [
-        join(BACKEND_DIR, 'venv', 'Scripts', 'python.exe'),
-        join(BACKEND_DIR, '.venv', 'Scripts', 'python.exe'),
-      ]
-    : [
-        join(BACKEND_DIR, 'venv', 'bin', 'python'),
-        join(BACKEND_DIR, 'venv', 'bin', 'python3'),
-        join(BACKEND_DIR, '.venv', 'bin', 'python'),
-        join(BACKEND_DIR, '.venv', 'bin', 'python3'),
-      ]
+  // Paths are built entirely from runtime values so Turbopack cannot
+  // statically resolve them to actual filesystem entries during the build.
+  const venvDirs = ['venv', '.venv']
+  const candidates: string[] = isWindows
+    ? venvDirs.map((v) => join(backendDir, v, 'Scripts', 'python.exe'))
+    : venvDirs.flatMap((v) => [
+        join(backendDir, v, 'bin', 'python'),
+        join(backendDir, v, 'bin', 'python3'),
+      ])
 
   const found = candidates.find(existsSync)
 
   if (!found) {
-    // Throw a clear setup error rather than a cryptic spawn failure
     throw new Error(
       `[python-resolver] No venv Python interpreter found.\n` +
         `Searched:\n${candidates.map((c) => `  ${c}`).join('\n')}\n\n` +
@@ -60,4 +70,9 @@ function resolveVenvPython(): string {
   return found
 }
 
-export const VENV_PYTHON = resolveVenvPython()
+/**
+ * Convenience re-export: absolute path to the backend directory.
+ * BACKEND_DIR is computed at module load — safe because it uses only
+ * process.cwd() string concatenation, no filesystem access or symlinks.
+ */
+export const BACKEND_DIR: string = (() => getBackendDir())()

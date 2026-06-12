@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
 import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 import type { GeneratedTests, PotentialLogicIssue, SemanticFunctionTestSuite, TestArtifact } from '@/lib/testgenai-types'
-import { VENV_PYTHON, BACKEND_DIR } from '@/lib/python-resolver'
+import { getVenvPython, BACKEND_DIR } from '@/lib/python-resolver'
 
 export const runtime = 'nodejs'
 
@@ -340,7 +340,7 @@ export async function POST(request: NextRequest) {
     }
 
     const filePath = join(UPLOADS_DIR, fileName)
-    const result = spawnSync(VENV_PYTHON, [ENGINE_PATH, 'generate-tests', filePath, GENERATED_TESTS_DIR], {
+    const result = spawnSync(getVenvPython(), [ENGINE_PATH, 'generate-tests', filePath, GENERATED_TESTS_DIR], {
       cwd: BACKEND_DIR,
       encoding: 'utf-8',
     })
