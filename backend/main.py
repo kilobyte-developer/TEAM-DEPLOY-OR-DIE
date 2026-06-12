@@ -7,19 +7,19 @@ import subprocess
 import sys
 import time
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from database_service import testgenai_database
-from mvp_engine import extract_function_spans
+from mvp_engine import analyze_python_file, extract_function_spans
 
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -306,6 +306,68 @@ def get_coverage():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    """Accept a Python file upload and store it in UPLOADS_DIR."""
+    if not file.filename or not file.filename.lower().endswith(".py"):
+        raise HTTPException(status_code=400, detail="Only Python (.py) files are supported.")
+
+    content = await file.read()
+    file_size = len(content)
+    dest = UPLOADS_DIR / file.filename
+    dest.write_bytes(content)
+    uploaded_at = datetime.utcnow().isoformat() + "Z"
+
+    def fmt(b: int) -> str:
+        if b < 1024:
+            return f"{b} B"
+        if b < 1024 * 1024:
+            return f"{b / 1024:.1f} KB"
+        return f"{b / (1024 * 1024):.1f} MB"
+
+    testgenai_database.record_upload({
+        "fileName": file.filename,
+        "filePath": str(dest),
+        "language": "Python",
+        "fileSize": file_size,
+        "repositoryName": "local-workspace",
+        "sourceType": "local",
+        "uploadedAt": uploaded_at,
+    })
+
+    return {
+        "id": file.filename,
+        "name": file.filename,
+        "language": "Python",
+        "sizeBytes": file_size,
+        "sizeLabel": fmt(file_size),
+        "status": "Uploaded",
+        "uploadedAt": uploaded_at,
+        "repository": "local-workspace",
+        "source": "local",
+    }
+
+
+class AnalyzeRequest(BaseModel):
+    file_name: str
+
+
+@app.post("/analyze")
+def analyze(request: AnalyzeRequest):
+    """Run AST analysis on a previously uploaded Python file."""
+    file_path = UPLOADS_DIR / request.file_name
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {request.file_name}")
+
+    try:
+        payload = analyze_python_file(file_path)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    testgenai_database.record_analysis(request.file_name, payload)
+    return payload
 
 
 if __name__ == "__main__":
