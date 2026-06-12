@@ -63,7 +63,8 @@ cd backend
 python3 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
+venv/bin/python -m uvicorn main:app --reload --port 8000
+# Windows: venv\Scripts\python.exe -m uvicorn main:app --reload --port 8000
 ```
 
 FastAPI is required for test execution and coverage. Source upload, analysis, generation, and user story routes are handled by Next.js API routes.

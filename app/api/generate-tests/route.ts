@@ -4,14 +4,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
 import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 import type { GeneratedTests, PotentialLogicIssue, SemanticFunctionTestSuite, TestArtifact } from '@/lib/testgenai-types'
+import { VENV_PYTHON, BACKEND_DIR } from '@/lib/python-resolver'
 
 export const runtime = 'nodejs'
 
-const BACKEND_DIR = join(process.cwd(), 'backend')
 const ENGINE_PATH = join(BACKEND_DIR, 'mvp_engine.py')
 const GENERATED_TESTS_DIR = '/tmp/testgenai_generated_tests'
 const UPLOADS_DIR = '/tmp/testgenai_uploads'
-const PYTHON_CMD = process.platform === 'win32' ? 'python' : 'python3'
 const GEMINI_MODEL = 'gemini-2.5-flash-lite'
 const AI_FIX_MODEL = 'gemini-2.5-flash-lite'
 
@@ -341,7 +340,7 @@ export async function POST(request: NextRequest) {
     }
 
     const filePath = join(UPLOADS_DIR, fileName)
-    const result = spawnSync(PYTHON_CMD, [ENGINE_PATH, 'generate-tests', filePath, GENERATED_TESTS_DIR], {
+    const result = spawnSync(VENV_PYTHON, [ENGINE_PATH, 'generate-tests', filePath, GENERATED_TESTS_DIR], {
       cwd: BACKEND_DIR,
       encoding: 'utf-8',
     })

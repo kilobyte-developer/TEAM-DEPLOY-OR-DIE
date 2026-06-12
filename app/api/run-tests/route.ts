@@ -2,17 +2,17 @@ import { mkdir, readFile, writeFile } from 'fs/promises'
 import { spawnSync } from 'child_process'
 import { NextRequest, NextResponse } from 'next/server'
 import { join } from 'path'
+import { tmpdir } from 'os'
 import { testgenaiDatabase } from '@/database/services/TestGenAIDatabaseService'
 import type { ExecutionResult } from '@/lib/testgenai-types'
+import { VENV_PYTHON, BACKEND_DIR } from '@/lib/python-resolver'
 
 export const runtime = 'nodejs'
 
-const BACKEND_DIR = join(process.cwd(), 'backend')
-const GENERATED_TESTS_DIR = '/tmp/testgenai_generated_tests'
-const REPORTS_DIR = '/tmp/testgenai_reports'
+const GENERATED_TESTS_DIR = join(tmpdir(), 'testgenai_generated_tests')
+const REPORTS_DIR = join(tmpdir(), 'testgenai_reports')
 const MANIFEST_PATH = join(GENERATED_TESTS_DIR, 'manifest.json')
 const RESULTS_PATH = join(REPORTS_DIR, 'results.json')
-const PYTHON_CMD = process.platform === 'win32' ? 'python' : 'python3'
 
 type Manifest = {
   sourceFileName: string
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf-8')) as Manifest
     const started = performance.now()
     const result = spawnSync(
-      PYTHON_CMD,
+      VENV_PYTHON,
       ['-m', 'pytest', manifest.unitTestFilePath, manifest.edgeTestFilePath, '-v', '--tb=short'],
       {
         cwd: BACKEND_DIR,

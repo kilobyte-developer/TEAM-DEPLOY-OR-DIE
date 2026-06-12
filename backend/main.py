@@ -1,8 +1,10 @@
 from datetime import datetime
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 import time
 
 from fastapi import FastAPI, HTTPException
@@ -31,6 +33,21 @@ MANIFEST_PATH = GENERATED_TESTS_DIR / "manifest.json"
 COVERAGE_JSON_PATH = REPORTS_DIR / "coverage.json"
 RESULTS_PATH = REPORTS_DIR / "results.json"
 
+# Resolve the venv Python explicitly relative to this file's directory.
+# This avoids relying on sys.executable or PATH, which may point to the
+# system Python (/usr/bin/python3) when the server is started without
+# explicitly invoking venv/bin/python (e.g., bare `uvicorn` or `python`).
+_VENV_PYTHON_CANDIDATES = [
+    BASE_DIR / "venv" / "bin" / "python",
+    BASE_DIR / "venv" / "bin" / "python3",
+    BASE_DIR / ".venv" / "bin" / "python",
+    BASE_DIR / ".venv" / "bin" / "python3",
+]
+VENV_PYTHON = next(
+    (str(p) for p in _VENV_PYTHON_CANDIDATES if p.exists()),
+    sys.executable,  # fallback: hope sys.executable is the right one
+)
+
 
 def ensure_directories() -> None:
     UPLOADS_DIR.mkdir(exist_ok=True)
@@ -39,6 +56,14 @@ def ensure_directories() -> None:
 
 
 ensure_directories()
+
+
+@app.on_event("startup")
+def _log_interpreter_info() -> None:
+    """Log which Python interpreter is running so venv issues are immediately visible."""
+    print(f"[startup] sys.executable = {sys.executable}")
+    print(f"[startup] sys.prefix     = {sys.prefix}")
+    print(f"[startup] venv active    = {sys.prefix != sys.base_prefix}")
 
 
 class RunTestsRequest(BaseModel):
@@ -156,7 +181,10 @@ def run_tests(request: RunTestsRequest):
     unit_test_path = Path(manifest["unitTestFilePath"])
     edge_test_path = Path(manifest["edgeTestFilePath"])
 
+    print(f"[run-tests] PID={os.getpid()} sys.executable={sys.executable} VENV_PYTHON={VENV_PYTHON}")
     command = [
+        VENV_PYTHON,
+        "-m",
         "pytest",
         str(unit_test_path),
         str(edge_test_path),
@@ -213,6 +241,8 @@ def get_coverage():
     module_name = manifest["moduleName"]
 
     command = [
+        VENV_PYTHON,
+        "-m",
         "pytest",
         str(unit_test_path),
         str(edge_test_path),
