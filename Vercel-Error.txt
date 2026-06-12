@@ -1,0 +1,23 @@
+The Vercel deployment failed with Command "pnpm run build" exited with 1. This started failing after the recent fix-python branch was merged, which included multiple changes — not just lib/python-resolver.ts. Don't assume the cause is limited to one file; review the full diff of everything merged in that branch.
+Diagnose and fix:
+
+Get the full list of changes from the merge: run git log --oneline -10 and git diff <commit-before-merge> HEAD --stat to see every file touched by the fix-python branch merge (README.md, app/api/analyze/route.ts, app/api/generate-tests/route.ts, app/api/run-tests/route.ts, backend/.coverage, backend/main.py, lib/python-resolver.ts, and any others).
+Run the build locally to reproduce the exact error: pnpm run build. Capture the full output — don't stop at the first error, scroll up to find the root cause (TypeScript errors, module resolution failures, import errors, env var issues, or errors during static generation/prerendering).
+Check lib/python-resolver.ts for build-time execution issues:
+
+Does it call fs.existsSync() or similar checks at module load time (top-level code) rather than lazily inside a function? If so, this runs during Vercel's build/bundling step.
+Does it throw an error if no venv path exists? Vercel's build environment won't have backend/venv/ (gitignored, never deployed). If this throw happens at import time, it crashes the build.
+
+
+Check the three modified API routes for:
+
+New imports of python-resolver.ts that get evaluated at build/static-analysis time.
+Any export const dynamic, runtime = 'edge', or other config changes that affect how/when Next.js evaluates these routes during build.
+TypeScript type errors from the new imports (missing types, incorrect signatures).
+
+
+Check backend/.coverage — this is a binary/data file that got committed by mistake (noted earlier as a git artifact). Confirm it isn't being picked up by any build step, linter, or file-scanning logic that could choke on a non-text file. If it's just sitting in the repo unused, it's likely harmless but should be removed/gitignored regardless.
+Check README.md changes — confirm nothing in the README changes affects build config (e.g., if any script/config snippet was accidentally moved into a .ts/.js/.json file instead of staying as documentation).
+Check for lockfile drift: did package.json get modified anywhere in this branch (even indirectly) without pnpm-lock.yaml being updated? Run pnpm install --frozen-lockfile to catch mismatches that fail in Vercel's CI but might not fail locally if you ran plain pnpm install.
+Fix approach: any filesystem/path-resolution logic tied to the local venv (python-resolver.ts and its usage in the three routes) must execute only at request time (inside the handler function), never at module/import/build time. Vercel's serverless functions don't have access to your local backend/venv/ anyway — confirm whether these routes are even expected to work in production on Vercel, or whether they're dev-only and need a guard/fallback for production (e.g., pointing to the Render-deployed backend instead of a local Python path in production).
+Report: full pnpm run build error output, root cause identified, every file changed to fix it, and confirmation that pnpm run build passes locally before pushing again.
