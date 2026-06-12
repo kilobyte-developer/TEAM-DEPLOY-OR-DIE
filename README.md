@@ -33,16 +33,33 @@ cd ..
 
 ### 3. Environment variables
 
-Create `.env.local` in the project root:
+Copy `.env.example` to `.env.local` in the project root and fill in your values:
 
-```env
-NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
-OPENAI_API_KEY=
-GEMINI_API_KEY=
-LLM_PROVIDER_PRIORITY=openai
+```bash
+cp .env.example .env.local
 ```
 
-API keys are optional. The local fallback handles user story generation if neither is configured.
+```env
+# ── Next.js (frontend) ──────────────────────────────────────
+# URL of the FastAPI backend (use localhost for local dev)
+NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
+
+# ── LLM providers ───────────────────────────────────────────
+OPENAI_API_KEY=sk-...          # primary LLM (optional)
+GEMINI_API_KEY=AIza...         # fallback LLM (optional)
+GEMINI_AI_FIXATIONS_API_KEY=AIza...
+GEMINI_SOURCE_CODE_TESTS_API_KEY=AIza...
+
+# Which provider to try first: "openai" or "gemini" (default: openai)
+LLM_PROVIDER_PRIORITY=openai
+
+# ── Supabase ─────────────────────────────────────────────────
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+```
+
+All API keys are optional for local development. The local fallback handles user story generation if neither OpenAI nor Gemini is configured. Supabase keys are only required if database persistence is enabled.
 
 ## Running
 
@@ -115,5 +132,23 @@ FastAPI backend is not running. Start it in Terminal 2.
 **"python: command not found"**
 Use `python3` on Linux/macOS.
 
+**"No module named pytest" when running tests**
+Make sure you started the FastAPI server using the venv Python, not the system Python:
+```bash
+venv/bin/python -m uvicorn main:app --reload --port 8000
+```
+
 **Tests won't generate**
 Run analysis first and confirm results appear before generating.
+
+## CI / CD
+
+Automated CI via GitHub Actions has been removed (`.github/workflows/ci.yml` deleted). Run tests locally before merging:
+
+```bash
+# Frontend
+pnpm lint
+
+# Backend
+cd backend && source venv/bin/activate && pytest
+```
