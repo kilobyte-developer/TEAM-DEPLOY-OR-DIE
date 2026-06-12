@@ -66,6 +66,10 @@ def _log_interpreter_info() -> None:
     print(f"[startup] venv active    = {sys.prefix != sys.base_prefix}")
 
 
+class GenerateTestsRequest(BaseModel):
+    file_name: str
+
+
 class RunTestsRequest(BaseModel):
     mode: str = "source-code"
 
@@ -169,6 +173,51 @@ def summarize_function_coverage(source_file_path: Path, missing_lines: set[int])
 
     covered_count = max(len(spans) - len(missing_functions), 0)
     return covered_count, missing_functions
+
+
+ENGINE_PATH = str(BASE_DIR / "mvp_engine.py")
+
+
+@app.post("/generate-tests")
+def generate_tests(request: GenerateTestsRequest):
+    """Run mvp_engine.py to generate tests for a previously uploaded Python file."""
+    file_path = UPLOADS_DIR / request.file_name
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {request.file_name}")
+
+    command = [
+        VENV_PYTHON,
+        ENGINE_PATH,
+        "generate-tests",
+        str(file_path),
+        str(GENERATED_TESTS_DIR),
+    ]
+
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=120,
+            cwd=str(BASE_DIR),
+        )
+    except subprocess.TimeoutExpired as error:
+        raise HTTPException(status_code=500, detail="Test generation timed out.") from error
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"Test generation failed: {error}") from error
+
+    if result.returncode != 0:
+        error_message = result.stderr.strip() or "Test generation failed."
+        status_code = 404 if "File not found" in error_message else 500
+        raise HTTPException(status_code=status_code, detail=error_message)
+
+    try:
+        payload = json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+        raise HTTPException(status_code=500, detail="mvp_engine returned invalid JSON.") from error
+
+    testgenai_database.record_generated_tests(request.file_name, payload)
+    return payload
 
 
 @app.post("/run-tests", response_model=ExecutionResultResponse)
